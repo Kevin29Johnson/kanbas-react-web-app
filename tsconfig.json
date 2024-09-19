@@ -6,6 +6,10 @@
       "dom.iterable",
       "esnext"
     ],
+    "plugins": [
+      {
+        "name": "@babel/plugin-proposal-private-property-in-object"
+      }],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
