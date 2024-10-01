@@ -45,7 +45,7 @@ export default function Assignments() {
            <p> <span className="red">Multiple Modules</span>|<strong>Not available until</strong> May 13 at 12.00 am|</p>
           <p> <strong>Due</strong> May 20 at 11:59 pm | 100 pts</p>
           </li>
-
+          
           <li className="wd-assignment-list-item list-group-item p-3 ps-1 border-bottom pb-2 border-end border-end-2">
           <BsGripVertical className="me-2 fs-3" />
           <PiNotePencilLight className="me-2 fs-3" style={{color:"green"}}/>
