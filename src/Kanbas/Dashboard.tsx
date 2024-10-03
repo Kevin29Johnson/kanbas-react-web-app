@@ -32,7 +32,7 @@ function Dashboard() {
             <img alt="python" src="/images/python.jpg" width="100%" height={160}  />
             <div className="card-body">
               <h5 className="wd-dashboard-course-title card-title">
-                 CS1235 Python Programming
+                 CS1235 Python
               </h5>
               <p className="wd-dashboard-course-title card-text">
                 Python A-Z
@@ -48,7 +48,7 @@ function Dashboard() {
     <Link className="wd-dashboard-course-link text-decoration-none text-dark" to="/Kanbas/Courses/1236/Home">
       <img alt="JS"src="/images/javascript.jpg" width="100%" height={160} />
       <div className="card-body">
-        <h5 className="wd-dashboard-course-title card-title">CS1236 JavaScript Development</h5>
+        <h5 className="wd-dashboard-course-title card-title">CS1236 JavaScript</h5>
         <p className="wd-dashboard-course-title card-text">JavaScript Mastery</p>
         <button className="btn btn-primary">Go</button>
       </div>
