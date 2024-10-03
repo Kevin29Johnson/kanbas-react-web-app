@@ -40,7 +40,7 @@ The Kanbas application should include a link to navigate back to the landing pag
       <label htmlFor="wd-assignment-group" className="font-weight-bold">Assignment Group</label>
       </div>   
       <div className="col-md-6">
-          <select id="wd-assignment-group" className="form-control">
+          <select id="wd-assignment-group" className="form-select">
             <option value="assignments">Assignments</option>
           </select>
         </div>
@@ -51,7 +51,7 @@ The Kanbas application should include a link to navigate back to the landing pag
       <label htmlFor="wd-display-grade-as" className="font-weight-bold">Display Grade as</label>
       </div> 
         <div className="col-md-6">
-          <select id="wd-display-grade-as" className="form-control">
+          <select id="wd-display-grade-as" className="form-select">
             <option value="percentage">Percentage</option>
           </select>
         </div>
@@ -62,7 +62,7 @@ The Kanbas application should include a link to navigate back to the landing pag
       <label htmlFor="wd-submission-type" className="font-weight-bold">Submission Type</label>
       </div> 
       <div className="col-md-6 border p-2 ">
-          <select id="wd-submission-type" className="form-control">
+          <select id="wd-submission-type" className="form-select">
             <option value="online">Online</option>
           </select>
           <div className="row mb-2">
@@ -127,7 +127,7 @@ The Kanbas application should include a link to navigate back to the landing pag
       <div className="row mb-3">
         <div className="col-md-6">
           <label htmlFor="wd-assign-to" className="font-weight-bold">Assign To</label>
-          <select id="wd-assign-to" className="form-control">
+          <select id="wd-assign-to" className="form-select">
             <option value="everyone">Everyone</option>
           </select>
         </div>
