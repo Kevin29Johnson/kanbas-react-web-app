@@ -59,3 +59,14 @@ body * {  font-family: Arial, Helvetica, sans-serif;  }
 .red{
   color:red;
 }
+
+.wd-assignment-list-item a {
+  font-weight: bold;
+  text-decoration: none;
+}
+
+
+.wd-assignment-list-item p {
+  margin: 0;
+  color: #555;
+}
