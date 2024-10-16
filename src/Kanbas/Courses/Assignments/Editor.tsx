@@ -1,28 +1,30 @@
 import React from 'react';
-
+import { useParams } from "react-router";
+import { assignments } from "../../Database";
+import { Link } from 'react-router-dom';
 
 export default function AssignmentEditor() {
+  const { cid, aid } = useParams(); 
+  const assignmentToEdit = assignments.find(
+    (assignment) => assignment.course === cid && assignment._id === aid
+  );
+  function formatDateForInput(dateString: string | number | Date | undefined) {
+    if (!dateString) return ""; // handle undefined dates
+    const date = new Date(dateString);
+    return date.toISOString().split("T")[0]; // returns YYYY-MM-DD
+  }
   return (
     <div id="wd-assignments-editor" className="container mt-5" style={{ maxWidth: '700px' }}>
       
       {/* Assignment Name */}
       <div className="form-group mb-3">
         <label htmlFor="wd-name" className="font-weight-bold">Assignment Name</label>
-        <input id="wd-name" className="form-control" value="A1" />
+        <input id="wd-name" className="form-control" value={assignmentToEdit?.title} />
       </div>
       
       {/* Assignment Description */}
       <div className="form-group mb-3">
-        <textarea id="wd-description" className="form-control" rows={6} defaultValue={`The assignment is available online.
-Submit a link to the landing page of your Web application running on Netlify.
-
-The landing page should include the following:
-- Your full name and section
-- Links to each of the lab assignments
-- Link to the Kanbas application
-- Links to all relevant source code repositories
-
-The Kanbas application should include a link to navigate back to the landing page.`}></textarea>
+        <textarea id="wd-description" className="form-control" rows={6} defaultValue={assignmentToEdit?.description}></textarea>
       </div>
 
       {/* Points, Assignment Group, Display Grade as, and Submission Type */}
@@ -31,7 +33,7 @@ The Kanbas application should include a link to navigate back to the landing pag
       <label htmlFor="wd-points" className="font-weight-bold">Points</label>
         </div>
         <div className="col-md-6">
-          <input id="wd-points" className="form-control" type="number" value={100} />
+          <input id="wd-points" className="form-control" type="number" value={assignmentToEdit?.points} />
         </div>
       </div> 
 
@@ -92,33 +94,6 @@ The Kanbas application should include a link to navigate back to the landing pag
       </div>
         </div>
       </div>
-
-      {/* Online Entry Options */}
-      {/* <div className="row mb-2 ">
-      <div className="form-group">
-        <label className="font-weight-bold">Online Entry Options</label>
-        <div className="form-check">
-          <input type="checkbox" id="wd-text-entry" className="form-check-input" />
-          <label htmlFor="wd-text-entry" className="form-check-label">Text Entry</label>
-        </div>
-        <div className="form-check">
-          <input type="checkbox" id="wd-website-url" className="form-check-input" defaultChecked />
-          <label htmlFor="wd-website-url" className="form-check-label">Website URL</label>
-        </div>
-        <div className="form-check">
-          <input type="checkbox" id="wd-media-recordings" className="form-check-input" />
-          <label htmlFor="wd-media-recordings" className="form-check-label">Media Recordings</label>
-        </div>
-        <div className="form-check">
-          <input type="checkbox" id="wd-student-annotation" className="form-check-input" />
-          <label htmlFor="wd-student-annotation" className="form-check-label">Student Annotation</label>
-        </div>
-        <div className="form-check">
-          <input type="checkbox" id="wd-file-uploads" className="form-check-input" />
-          <label htmlFor="wd-file-uploads" className="form-check-label">File Uploads</label>
-        </div>
-      </div>
-      </div> */}
       {/* Assign To, Due Date, Available From */}
       <div className="col-md-3 d-flex align-items-center">
       <label htmlFor="wd-submission-type" className="font-weight-bold">Assign</label>
@@ -135,14 +110,14 @@ The Kanbas application should include a link to navigate back to the landing pag
         <div className="row mb-3">
         <div className="col-md-6">
           <label htmlFor="wd-due-date" className="font-weight-bold">Due</label>
-          <input id="wd-due-date" className="form-control w-100" type="date" value="2024-05-13" />
+          <input id="wd-due-date" className="form-control w-100" type="date" value={formatDateForInput(assignmentToEdit?.due_date)} />
         </div>
       </div>
       </div>
       <div className="row mb-3">
         <div className="col-md-6">
           <label htmlFor="wd-available-from" className="font-weight-bold">Available from</label>
-          <input id="wd-available-from" className="form-control w-100" type="date" value="2024-05-06" />
+          <input id="wd-available-from" className="form-control w-100" type="date" value={formatDateForInput(assignmentToEdit?.available_date)} />
         </div>
 
         <div className="col-md-6">
@@ -154,8 +129,15 @@ The Kanbas application should include a link to navigate back to the landing pag
       <hr />
       {/* Cancel and Save buttons */}
       <div className="d-flex justify-content-end mt-4">
-        <input type="button" className="btn btn-secondary me-2" value="Cancel" />
-        <input type="submit" className="btn btn-danger" value="Save" />
+        {/* Cancel button navigates back to the assignments page for the current course */}
+        <Link to={`/Kanbas/Courses/${cid}/Assignments`} className="btn btn-secondary me-2">
+          Cancel
+        </Link>
+        
+        {/* Save button navigates back to the assignments page for the current course */}
+        <Link to={`/Kanbas/Courses/${cid}/Assignments`} className="btn btn-danger">
+          Save
+        </Link>
       </div>
     </div>
   );
