@@ -3,37 +3,37 @@ import { HiPlus } from "react-icons/hi2";
 import { BsGripVertical, BsPlus } from "react-icons/bs";
 import { IoEllipsisVertical } from "react-icons/io5";
 import { PiNotePencilLight } from "react-icons/pi";
-import LessonControlButtons from "../Modules/LessonControlButtons";
 import { useNavigate, useParams } from "react-router";
-import { assignments } from "../../Database";
 import { useDispatch, useSelector } from "react-redux";
 import AssignmentControlButtons from "./AssignmentControlButton";
-import { deleteAssignment }
-  from "./reducer";
+import { deleteAssignment } from "./reducer";
+
 export default function Assignments() {
-  // Get the course ID from the URL
   const { cid } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { assignments } = useSelector((state: any) => state.assignmentReducer);
-// Filter assignments for the specific course ID
+  const { currentUser } = useSelector((state: any) => state.accountReducer) || {};
+
   const courseAssignments = assignments.filter(
-    (assignment:any) => assignment.course === cid
+    (assignment: any) => assignment.course === cid
   );
+
   function formatDate(dateString: string | number | Date) {
     const options: Intl.DateTimeFormatOptions = { month: "short", day: "numeric" };
     const date = new Date(dateString);
     const time = date.toLocaleTimeString("en-US", {
-      hour: '2-digit',
-      minute: '2-digit',
+      hour: "2-digit",
+      minute: "2-digit",
       hour12: true
     }).toLowerCase();
     return `${date.toLocaleDateString("en-US", options)} at ${time}`;
   }
-  
+
   const handleAddAssignment = () => {
-    navigate(`/Kanbas/Courses/${cid}/Assignments/New`); // Navigate to the AssignmentEditor
+    navigate(`/Kanbas/Courses/${cid}/Assignments/New`);
   };
+
   return (
     <div id="wd-assignments">
       <div className="container m-2" style={{ position: "relative" }}>
@@ -45,22 +45,29 @@ export default function Assignments() {
           placeholder="Search..."
           style={{ height: "34px" }}
         />
-        <button
-          id="wd-add-assignment-group"
-          className="btn btn-light btn-secondary ms-4"
-        >
-          <HiPlus className="position-relative me-2" style={{ bottom: "1px" }} />
-          Group
-        </button>
-        <button 
-          id="wd-add-assignment" 
-          className="btn btn-danger m-1"
-          onClick={handleAddAssignment} // Navigate to AssignmentEditor
-        >
-          <HiPlus className="position-relative me-2" style={{ bottom: "1px" }} />
-          Assignment
-        </button>
+        
+        {/* Show "Add Assignment" buttons only if the user is FACULTY */}
+        {currentUser?.role === "FACULTY" && (
+          <>
+            <button
+              id="wd-add-assignment-group"
+              className="btn btn-light btn-secondary ms-4"
+            >
+              <HiPlus className="position-relative me-2" style={{ bottom: "1px" }} />
+              Group
+            </button>
+            <button
+              id="wd-add-assignment"
+              className="btn btn-danger m-1"
+              onClick={handleAddAssignment}
+            >
+              <HiPlus className="position-relative me-2" style={{ bottom: "1px" }} />
+              Assignment
+            </button>
+          </>
+        )}
       </div>
+
       <div className="wd-title p-3 ps-2 bg-secondary">
         <h3 id="wd-assignments-title">
           <BsGripVertical className="me-2 fs-3" />
@@ -77,7 +84,7 @@ export default function Assignments() {
 
       <ul id="wd-assignment-list" className="list-group rounded-0">
         {courseAssignments.length > 0 ? (
-          courseAssignments.map((assignment:any) => (
+          courseAssignments.map((assignment: any) => (
             <li
               key={assignment._id}
               className="wd-assignment-list-item list-group-item p-3 ps-2 border-bottom d-flex align-items-start"
@@ -88,22 +95,28 @@ export default function Assignments() {
               </div>
               <div className="flex-grow-1">
                 <div className="d-flex justify-content-between">
-                  {/* Link to the assignment page */}
-                  <a
-                    className="wd-assignment-link"
-                    href={`#/Kanbas/Courses/${cid}/Assignments/${assignment._id}`}
-                  >
-                    {assignment.title}
-                  </a>
-                  <AssignmentControlButtons
-                    moduleId={assignment._id}
-                    deleteModule={(moduleId) => {
-                      const confirmed = window.confirm("Are you sure you want to delete this assignment?");
-                      if (confirmed) {
-                        dispatch(deleteAssignment(moduleId));
-                      }
-                    }}
-                  />
+                {currentUser?.role === "FACULTY" ? (
+    <a
+      className="wd-assignment-link"
+      href={`#/Kanbas/Courses/${cid}/Assignments/${assignment._id}`}
+    >
+      {assignment.title}
+    </a>
+  ) : (
+    <span className="wd-assignment-title">{assignment.title}</span>
+  )}
+                  {/* Show AssignmentControlButtons only if the user is FACULTY */}
+                  {currentUser?.role === "FACULTY" && (
+                    <AssignmentControlButtons
+                      moduleId={assignment._id}
+                      deleteModule={(moduleId) => {
+                        const confirmed = window.confirm("Are you sure you want to delete this assignment?");
+                        if (confirmed) {
+                          dispatch(deleteAssignment(moduleId));
+                        }
+                      }}
+                    />
+                  )}
                 </div>
                 <p>
                   <span className="red">Multiple Modules</span> |{" "}
