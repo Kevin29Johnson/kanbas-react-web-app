@@ -1,13 +1,49 @@
-import React from 'react';
-import { useParams } from "react-router";
+import React, { useState } from 'react';
+import { useNavigate, useParams } from "react-router";
 import { assignments } from "../../Database";
 import { Link } from 'react-router-dom';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { addAssignment, updateAssignment, deleteAssignment }
+  from "./reducer";
 export default function AssignmentEditor() {
   const { cid, aid } = useParams(); 
-  const assignmentToEdit = assignments.find(
-    (assignment) => assignment.course === cid && assignment._id === aid
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { assignments } = useSelector((state: any) => state.assignmentReducer);
+
+  const isNewAssignment = aid === "New";
+  const assignmentToEdit = isNewAssignment ? {} : assignments.find(
+    (assignment: any) => assignment.course === cid && assignment._id === aid
   );
+  const [title, setTitle] = useState(assignmentToEdit?.title || "");
+  const [description, setDescription] = useState(assignmentToEdit?.description || "");
+  const [points, setPoints] = useState(assignmentToEdit?.points || 0);
+  const [dueDate, setDueDate] = useState(formatDateForInput(assignmentToEdit?.due_date));
+  const [availableFrom, setAvailableFrom] = useState(formatDateForInput(assignmentToEdit?.available_date));
+  const [availableUntil, setAvailableUntil] = useState(formatDateForInput(assignmentToEdit?.available_until));
+const handleSave = () => {
+    const newAssignment = {
+      _id: isNewAssignment ? Date.now().toString() : aid,
+      course: cid,
+      title,
+      description,
+      points,
+      due_date: dueDate,
+      available_date: availableFrom,
+      available_until: availableUntil,
+    };
+
+    if (isNewAssignment) {
+      dispatch(addAssignment(newAssignment));
+    } else {
+      dispatch(updateAssignment(newAssignment));
+    }
+    
+    navigate(`/Kanbas/Courses/${cid}/Assignments`);
+  };
+
+  
+
   function formatDateForInput(dateString: string | number | Date | undefined) {
     if (!dateString) return ""; // handle undefined dates
     const date = new Date(dateString);
@@ -19,12 +55,14 @@ export default function AssignmentEditor() {
       {/* Assignment Name */}
       <div className="form-group mb-3">
         <label htmlFor="wd-name" className="font-weight-bold">Assignment Name</label>
-        <input id="wd-name" className="form-control" value={assignmentToEdit?.title} />
+        <input id="wd-name" className="form-control" value={title} 
+          onChange={(e) => setTitle(e.target.value)}  />
       </div>
       
       {/* Assignment Description */}
       <div className="form-group mb-3">
-        <textarea id="wd-description" className="form-control" rows={6} defaultValue={assignmentToEdit?.description}></textarea>
+        <textarea id="wd-description" className="form-control" rows={6} value={description}
+          onChange={(e) => setDescription(e.target.value)}></textarea>
       </div>
 
       {/* Points, Assignment Group, Display Grade as, and Submission Type */}
@@ -33,7 +71,8 @@ export default function AssignmentEditor() {
       <label htmlFor="wd-points" className="font-weight-bold">Points</label>
         </div>
         <div className="col-md-6">
-          <input id="wd-points" className="form-control" type="number" value={assignmentToEdit?.points} />
+          <input id="wd-points" className="form-control" type="number" value={points} 
+            onChange={(e) => setPoints(Number(e.target.value))}  />
         </div>
       </div> 
 
@@ -110,19 +149,22 @@ export default function AssignmentEditor() {
         <div className="row mb-3">
         <div className="col-md-6">
           <label htmlFor="wd-due-date" className="font-weight-bold">Due</label>
-          <input id="wd-due-date" className="form-control w-100" type="date" value={formatDateForInput(assignmentToEdit?.due_date)} />
+          <input id="wd-due-date" className="form-control w-100" type="date" value={dueDate} 
+            onChange={(e) => setDueDate(e.target.value)} />
         </div>
       </div>
       </div>
       <div className="row mb-3">
         <div className="col-md-6">
           <label htmlFor="wd-available-from" className="font-weight-bold">Available from</label>
-          <input id="wd-available-from" className="form-control w-100" type="date" value={formatDateForInput(assignmentToEdit?.available_date)} />
+          <input id="wd-available-from" className="form-control w-100" type="date" value={availableFrom} 
+            onChange={(e) => setAvailableFrom(e.target.value)}  />
         </div>
 
         <div className="col-md-6">
           <label htmlFor="wd-available-until" className="font-weight-bold">Until</label>
-          <input id="wd-available-until" className="form-control" type="date" value="2024-05-20" />
+          <input id="wd-available-until" className="form-control" type="date" value={availableUntil} 
+            onChange={(e) => setAvailableUntil(e.target.value)} />
         </div>
       </div>
       </div>
@@ -135,9 +177,7 @@ export default function AssignmentEditor() {
         </Link>
         
         {/* Save button navigates back to the assignments page for the current course */}
-        <Link to={`/Kanbas/Courses/${cid}/Assignments`} className="btn btn-danger">
-          Save
-        </Link>
+        <button onClick={handleSave} className="btn btn-danger">Save</button>
       </div>
     </div>
   );
