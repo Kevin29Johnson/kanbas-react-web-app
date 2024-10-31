@@ -99,7 +99,7 @@ export default function Dashboard({
               <div key={course._id} className="wd-dashboard-course col" style={{ width: "300px" }}>
                 <div className="card">
                   <Link
-                    to={`/Kanbas/Courses/${course._id}/Home`}
+                    to={isEnrolled(course._id)?`/Kanbas/Courses/${course._id}/Home`:``}
                     className="wd-dashboard-course-link text-decoration-none text-dark"
                   >
                     <img
