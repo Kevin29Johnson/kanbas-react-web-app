@@ -23,7 +23,7 @@ export default function Profile() {
         <div>
           <input defaultValue={profile.username} id="wd-username" className="form-control mb-2"
                  onChange={(e) => setProfile({ ...profile, username:  e.target.value })}/>
-          <input defaultValue={profile.password} id="wd-password" className="form-control mb-2"
+          <input type="password" defaultValue={profile.password} id="wd-password" className="form-control mb-2"
                  onChange={(e) => setProfile({ ...profile, password:  e.target.value })}/>
           <input defaultValue={profile.firstName} id="wd-firstname" className="form-control mb-2"
                  onChange={(e) => setProfile({ ...profile, firstName: e.target.value })}/>

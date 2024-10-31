@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import * as db from "./Database";
 import { useSelector } from "react-redux";
-
+import { useDispatch } from "react-redux";
+import { enroll, unenroll } from "./reducer";
 export default function Dashboard({
   courses,
   course,
@@ -19,33 +20,16 @@ export default function Dashboard({
   updateCourse: () => void;
 }) {
   const { currentUser } = useSelector((state: any) => state.accountReducer) || {};
-  const [enrollments, setEnrollments] = useState(db.enrollments || []);
+  const { enrollments } = useSelector((state: any) => state.enrollmentReducer) || {};
+  const dispatch=useDispatch();
   const [showAllCourses, setShowAllCourses] = useState(false);
 
   const toggleEnrollments = () => setShowAllCourses(!showAllCourses);
 
-    // Add the enrollment entry for the user
-    const enrollInCourse = (courseId:any) => {
-      const newEnrollment = { _id: Date.now().toString(), user: currentUser?._id, course: courseId };
-      setEnrollments((prevEnrollments) => [...prevEnrollments, newEnrollment]);
-      console.log(`Enrolled in course: ${courseId}`);
-    };
-  
-    // Remove the enrollment entry for the user
-    const unenrollFromCourse = (courseId:any) => {
-      setEnrollments((prevEnrollments) =>
-        prevEnrollments.filter(
-          (enrollment) =>
-            !(enrollment.user === currentUser?._id && enrollment.course === courseId)
-        )
-      );
-      console.log(`Unenrolled from course: ${courseId}`);
-    };
-
   // Check if a student is enrolled in a course
   const isEnrolled = (courseId: string) =>
     enrollments.some(
-      (enrollment) =>
+      (enrollment: { user: any; course: string; }) =>
         enrollment.user === currentUser?._id && enrollment.course === courseId
     );
 
@@ -141,7 +125,7 @@ export default function Dashboard({
                           <button
                             onClick={(event) => {
                               event.preventDefault();
-                              unenrollFromCourse(course._id);
+                              dispatch(unenroll({ user: currentUser?._id, course: course._id }));
                             }}
                             className="btn btn-danger float-end"
                           >
@@ -151,7 +135,7 @@ export default function Dashboard({
                           <button
                             onClick={(event) => {
                               event.preventDefault();
-                              enrollInCourse(course._id);
+                              dispatch(enroll({ user: currentUser?._id, course: course._id }));
                             }}
                             className="btn btn-success float-end"
                           >
@@ -195,4 +179,3 @@ export default function Dashboard({
       </div>
     );
   }
-  
