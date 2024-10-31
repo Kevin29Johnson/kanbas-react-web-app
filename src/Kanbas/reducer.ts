@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { enrollments } from "./Database";
 
 const initialState = {
-    enrollments: enrollments || [], // Initializing with provided enrollments data or an empty array
+    enrollments: enrollments || [], 
 };
 
 const enrollmentsSlice = createSlice({
@@ -16,13 +16,11 @@ const enrollmentsSlice = createSlice({
                 course: action.payload.course,
             };
             state.enrollments = [...state.enrollments, newEnrollment];
-            console.log("Enrolled:", newEnrollment); // Log each enrollment
         },
         unenroll(state, action) {
             state.enrollments = state.enrollments.filter(
                 (enrollment) =>!(enrollment.user ===action.payload.user && enrollment.course === action.payload.course)
             );
-            console.log("Unenrolled:", action.payload); // Log each unenrollment
         },
     },
 });
