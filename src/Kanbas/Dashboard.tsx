@@ -117,7 +117,7 @@ export default function Dashboard({
                       >
                         {course.description || "No description available"}
                       </p>
-                      <button className="btn btn-primary">Go</button>
+                     { isEnrolled(course._id) && <button className="btn btn-primary">Go</button>}
   
                       {/* Enroll/Unenroll Button for STUDENT users */}
                       {currentUser?.role === "STUDENT" && (
@@ -127,7 +127,7 @@ export default function Dashboard({
                               event.preventDefault();
                               dispatch(unenroll({ user: currentUser?._id, course: course._id }));
                             }}
-                            className="btn btn-danger float-end"
+                            className="btn btn-danger float-end m-1"
                           >
                             Unenroll
                           </button>
@@ -137,7 +137,7 @@ export default function Dashboard({
                               event.preventDefault();
                               dispatch(enroll({ user: currentUser?._id, course: course._id }));
                             }}
-                            className="btn btn-success float-end"
+                            className="btn btn-success float-end m-1"
                           >
                             Enroll
                           </button>
