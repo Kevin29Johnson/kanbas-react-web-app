@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { enroll, unenroll } from "./reducer";
+import { fetchAllCourses } from "./Courses/client";
 export default function Dashboard({
   courses,
   course,
@@ -26,6 +27,11 @@ export default function Dashboard({
   const [showAllCourses, setShowAllCourses] = useState(false);
 
   const toggleEnrollments = () => setShowAllCourses(!showAllCourses);
+  // const toggleEnrollments=()=>{
+  //    if(!showAllCourses){
+  //     fetchAllCourses();
+  //    }
+  // }
 
   // Check if a student is enrolled in a course
   const isEnrolled = (courseId: string) =>

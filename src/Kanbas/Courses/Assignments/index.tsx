@@ -6,7 +6,10 @@ import { PiNotePencilLight } from "react-icons/pi";
 import { useNavigate, useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import AssignmentControlButtons from "./AssignmentControlButton";
-import { deleteAssignment } from "./reducer";
+import { deleteAssignment,setAssignments } from "./reducer";
+import * as coursesClient from "../client";
+import * as assignmentClient from "./client";
+import { useEffect } from "react";
 
 export default function Assignments() {
   const { cid } = useParams();
@@ -15,9 +18,24 @@ export default function Assignments() {
   const { assignments } = useSelector((state: any) => state.assignmentReducer);
   const { currentUser } = useSelector((state: any) => state.accountReducer) || {};
 
-  const courseAssignments = assignments.filter(
-    (assignment: any) => assignment.course === cid
-  );
+  // const courseAssignments = assignments.filter(
+  //   (assignment: any) => assignment.course === cid
+  // );
+
+  const fetchAssignments = async () => {
+    const assignments = await coursesClient.findAssignmentForCourse(cid as string);
+    dispatch(setAssignments(assignments));
+   
+  };
+
+  const removeAssignment = async (assignmentId: string) => {
+    await assignmentClient.deleteAssignment(assignmentId);
+    dispatch(deleteAssignment(assignmentId));
+  };
+
+  useEffect(() => {
+    fetchAssignments();
+  }, []);
 
   function formatDate(dateString: string | number | Date) {
     const options: Intl.DateTimeFormatOptions = { month: "short", day: "numeric" };
@@ -83,8 +101,8 @@ export default function Assignments() {
       </div>
 
       <ul id="wd-assignment-list" className="list-group rounded-0">
-        {courseAssignments.length > 0 ? (
-          courseAssignments.map((assignment: any) => (
+        {assignments.length > 0 ? (
+          assignments.map((assignment: any) => (
             <li
               key={assignment._id}
               className="wd-assignment-list-item list-group-item p-3 ps-2 border-bottom d-flex align-items-start"
@@ -112,7 +130,8 @@ export default function Assignments() {
                       deleteModule={(moduleId) => {
                         const confirmed = window.confirm("Are you sure you want to delete this assignment?");
                         if (confirmed) {
-                          dispatch(deleteAssignment(moduleId));
+                          //dispatch(deleteAssignment(moduleId));
+                          removeAssignment(assignment._id)
                         }
                       }}
                     />

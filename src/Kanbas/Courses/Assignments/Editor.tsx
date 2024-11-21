@@ -5,6 +5,9 @@ import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { addAssignment, updateAssignment, deleteAssignment }
   from "./reducer";
+import * as assignmentClient from "./client";
+import * as coursesClient from "../client";
+
 export default function AssignmentEditor() {
   const { cid, aid } = useParams(); 
   const dispatch = useDispatch();
@@ -21,7 +24,7 @@ export default function AssignmentEditor() {
   const [dueDate, setDueDate] = useState(formatDateForInput(assignmentToEdit?.due_date));
   const [availableFrom, setAvailableFrom] = useState(formatDateForInput(assignmentToEdit?.available_date));
   const [availableUntil, setAvailableUntil] = useState(formatDateForInput(assignmentToEdit?.available_until));
-const handleSave = () => {
+  const handleSave = async () => {
     const newAssignment = {
       _id: isNewAssignment ? Date.now().toString() : aid,
       course: cid,
@@ -33,14 +36,24 @@ const handleSave = () => {
       available_until: availableUntil,
     };
 
-    if (isNewAssignment) {
-      dispatch(addAssignment(newAssignment));
-    } else {
-      dispatch(updateAssignment(newAssignment));
+    try {
+      if (isNewAssignment) {
+        // Create new assignment using client.ts
+        const createdAssignment = await coursesClient.createAssignmentForCourse(cid!, newAssignment);
+        dispatch(addAssignment(createdAssignment)); // Dispatch Redux action to add assignment
+      } else {
+        // Update existing assignment using client.ts
+        
+        const updatedAssignment = await assignmentClient.updateAssignment(newAssignment);
+        dispatch(updateAssignment(updatedAssignment)); // Dispatch Redux action to update assignment
+      }
+      navigate(`/Kanbas/Courses/${cid}/Assignments`); // Navigate back to the assignments page
+    } catch (error) {
+      console.error("Error saving assignment:", error);
+      navigate(`/Kanbas/Courses/${cid}/Assignments`); 
     }
-    
-    navigate(`/Kanbas/Courses/${cid}/Assignments`);
   };
+
 
   
 
