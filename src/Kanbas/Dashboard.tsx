@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { enroll, unenroll } from "./reducer";
 import { fetchAllCourses } from "./Courses/client";
 import * as coursesClient from "./Courses/client";
+import { UserRole } from './roles';
 export default function Dashboard({
   courses,
   course,
@@ -49,7 +50,9 @@ export default function Dashboard({
     fetchCourses();
   }
   //courses is enrolled and course is all params in dashboard
-  const toggleEnrollments = () => setShowAllCourses(!showAllCourses);
+  const toggleEnrollments = () =>{
+    setShowAllCourses(!showAllCourses)
+  };
 
   // Check if a student is enrolled in a course
   const isEnrolled = (courseId: string) =>
@@ -64,7 +67,7 @@ export default function Dashboard({
     : courses;
 
   const showEditDeleteButtons =
-    isEnrolled(course._id) && currentUser?.role === "FACULTY";
+    isEnrolled(course._id) && currentUser?.role === UserRole.FACULTY;
 
     useEffect(() => {
      getAllEnrollments()
@@ -85,7 +88,7 @@ export default function Dashboard({
       </div>
       <hr />
 
-      {currentUser?.role === "FACULTY" && (
+      {currentUser?.role === UserRole.FACULTY && (
         <>
           <h5>
             New Course
@@ -200,7 +203,7 @@ export default function Dashboard({
 
                     {/* Show Delete and Edit buttons only for FACULTY users */}
                     {/* Show Delete and Edit buttons only for FACULTY users who are enrolled */}
-                    {currentUser?.role === "FACULTY" &&
+                    {currentUser?.role === UserRole.FACULTY &&
                       isEnrolled(course._id) && (
                         <>
                           <button

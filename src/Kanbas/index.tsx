@@ -6,7 +6,7 @@ import Courses from "./Courses";
 import "./styles.css";
 
 import { useEffect, useState } from "react";
-import { Provider, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import ProtectedRoute from "./Account/ProtectedRoute";
 import store from "./store";
 import Session from "./Account/Session";
@@ -47,7 +47,13 @@ export default function Kanbas() {
         if (c._id === course._id) { return course; }
         else { return c; }
     })
-  );};
+  );
+  setAllCourses(allCourses.map((c) => {
+    if (c._id === course._id) { return course; }
+    else { return c; }
+})
+);
+};
 
   const getAllCourses= async ()=>{
     const allCourses=await courseClient.fetchAllCourses();
