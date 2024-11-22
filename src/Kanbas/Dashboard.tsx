@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { enroll, unenroll } from "./reducer";
 import { fetchAllCourses } from "./Courses/client";
+import * as coursesClient from "./Courses/client";
 export default function Dashboard({
   courses,
   course,
@@ -11,6 +12,8 @@ export default function Dashboard({
   addNewCourse,
   deleteCourse,
   updateCourse,
+  allCourses,
+  fetchCourses,
 }: {
   courses: any[];
   course: any;
@@ -18,20 +21,35 @@ export default function Dashboard({
   addNewCourse: () => void;
   deleteCourse: (course: any) => void;
   updateCourse: () => void;
+  allCourses: any[];
+  fetchCourses: () => void;
 }) {
   const { currentUser } =
     useSelector((state: any) => state.accountReducer) || {};
-  const { enrollments } =
-    useSelector((state: any) => state.enrollmentReducer) || {};
+  // const { enrollments } =
+  //   useSelector((state: any) => state.enrollmentReducer) || {};
   const dispatch = useDispatch();
   const [showAllCourses, setShowAllCourses] = useState(false);
 
+   const [enrollments,setEnrollments]=useState([])
+
+   const getAllEnrollments= async ()=>{
+    const enrollment=await coursesClient.fetchAllEnrollments();
+    setEnrollments(enrollment);
+  }
+
+  const enrollUserInCourse= async (courseId: string)=>{
+    await coursesClient.enrollUserinCourse(currentUser._id,courseId);
+    getAllEnrollments();
+    fetchCourses();
+  }
+  const unEnrollUserInCourse= async (courseId: string)=>{
+    await coursesClient.unenrollUserfromCourse(currentUser._id,courseId);
+    getAllEnrollments();
+    fetchCourses();
+  }
+  //courses is enrolled and course is all params in dashboard
   const toggleEnrollments = () => setShowAllCourses(!showAllCourses);
-  // const toggleEnrollments=()=>{
-  //    if(!showAllCourses){
-  //     fetchAllCourses();
-  //    }
-  // }
 
   // Check if a student is enrolled in a course
   const isEnrolled = (courseId: string) =>
@@ -42,11 +60,16 @@ export default function Dashboard({
 
   // Conditional filtering of courses based on showAllCourses
   const displayedCourses = showAllCourses
-    ? courses
-    : courses.filter((course) => isEnrolled(course._id));
+    ? allCourses
+    : courses;
 
   const showEditDeleteButtons =
     isEnrolled(course._id) && currentUser?.role === "FACULTY";
+
+    useEffect(() => {
+     getAllEnrollments()
+     coursesClient.fetchAllCourses()
+    }, [currentUser]);
 
   return (
     <div id="wd-dashboard">
@@ -145,12 +168,13 @@ export default function Dashboard({
                       <button
                         onClick={(event) => {
                           event.preventDefault();
-                          dispatch(
-                            unenroll({
-                              user: currentUser?._id,
-                              course: course._id,
-                            })
-                          );
+                          // dispatch(
+                          //   unenroll({
+                          //     user: currentUser?._id,
+                          //     course: course._id,
+                          //   })
+                          // );
+                          unEnrollUserInCourse(course._id)
                         }}
                         className="btn btn-danger float-end m-1"
                       >
@@ -160,12 +184,13 @@ export default function Dashboard({
                       <button
                         onClick={(event) => {
                           event.preventDefault();
-                          dispatch(
-                            enroll({
-                              user: currentUser?._id,
-                              course: course._id,
-                            })
-                          );
+                          // dispatch(
+                          //   enroll({
+                          //     user: currentUser?._id,
+                          //     course: course._id,
+                          //   })
+                           enrollUserInCourse(course._id)
+                          // );
                         }}
                         className="btn btn-success float-end m-1"
                       >
