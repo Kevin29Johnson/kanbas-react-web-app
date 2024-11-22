@@ -53,7 +53,7 @@ export default function Dashboard({
   const toggleEnrollments = () =>{
     setShowAllCourses(!showAllCourses)
   };
-
+  
   // Check if a student is enrolled in a course
   const isEnrolled = (courseId: string) =>
     enrollments.some(
