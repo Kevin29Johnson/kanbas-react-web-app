@@ -28,7 +28,7 @@ export default function Dashboard({
     useSelector((state: any) => state.accountReducer) || {};
   // const { enrollments } =
   //   useSelector((state: any) => state.enrollmentReducer) || {};
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const [showAllCourses, setShowAllCourses] = useState(false);
 
    const [enrollments,setEnrollments]=useState([])

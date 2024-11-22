@@ -15,8 +15,11 @@ import * as courseClient from "./Courses/client";
 
 
 export default function Kanbas() {
+  // enrolled courses
   const [courses, setCourses] = useState<any[]>([]);
+  //all courses
   const [allCourses, setAllCourses] = useState<any[]>([]);
+  // dummy body: course
   const [course, setCourse] = useState<any>({
     _id: "0",
     name: "New Course",
@@ -30,10 +33,11 @@ export default function Kanbas() {
   const addNewCourse = async () => {
     const newCourse = await userClient.createCourse(course);
     setCourses([ ...courses, newCourse ]);
+    setAllCourses([...allCourses,newCourse])
   };
 
   const deleteCourse = async (courseId: string) => {
-    const status = await courseClient.deleteCourse(courseId);
+    await courseClient.deleteCourse(courseId);
     setCourses(courses.filter((course) => course._id !== courseId));
   };
 
