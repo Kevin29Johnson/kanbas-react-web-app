@@ -66,8 +66,8 @@ export default function Dashboard({
     ? allCourses
     : courses;
 
-  const showEditDeleteButtons =
-    isEnrolled(course._id) && currentUser?.role === UserRole.FACULTY;
+  // const showEditDeleteButtons =
+  //   isEnrolled(course._id) && currentUser?.role === UserRole.FACULTY;
 
     useEffect(() => {
      getAllEnrollments()
