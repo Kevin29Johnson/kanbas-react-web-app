@@ -83,7 +83,7 @@ export default function Dashboard({
           id="wd-enrollments-button"
           onClick={toggleEnrollments}
         >
-          Enrollments
+          {showAllCourses?"All Courses":"My Courses"}
         </button>
       </div>
       <hr />

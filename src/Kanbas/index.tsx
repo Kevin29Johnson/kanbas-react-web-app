@@ -31,7 +31,8 @@ export default function Kanbas() {
   });
 
   const addNewCourse = async () => {
-    const newCourse = await userClient.createCourse(course);
+    // const newCourse = await userClient.createCourse(course);
+    const newCourse = await courseClient.createCourse(course);
     setCourses([ ...courses, newCourse ]);
     setAllCourses([...allCourses,newCourse])
   };
@@ -39,6 +40,7 @@ export default function Kanbas() {
   const deleteCourse = async (courseId: string) => {
     await courseClient.deleteCourse(courseId);
     setCourses(courses.filter((course) => course._id !== courseId));
+    setAllCourses(allCourses.filter((course) => course._id !== courseId));
   };
 
   const updateCourse = async () => {
@@ -65,6 +67,7 @@ export default function Kanbas() {
     let courses = [];
     try {
       courses = await userClient.findMyCourses();
+      console.log("from client"+courses)
     } catch (error) {
       console.error(error);
     }

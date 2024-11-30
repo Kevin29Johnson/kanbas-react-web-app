@@ -6,11 +6,10 @@ const axiosWithCredentials = axios.create({ withCredentials: true });
 
 
 export const deleteAssignment = async (assignmentId: string) => {
-    const response = await axios.delete(`${ASSIGNMENTS_API}/${assignmentId}`);
+    const response = await axiosWithCredentials.delete(`${ASSIGNMENTS_API}/${assignmentId}`);
     return response.data;
    };
    export const updateAssignment = async (assignment: any) => {
-    console.log("upd assign"+JSON.stringify(assignment));
-       await axios.put(`${ASSIGNMENTS_API}/${assignment._id}`, assignment);
+       await axiosWithCredentials.put(`${ASSIGNMENTS_API}/${assignment._id}`, assignment);
        
      };
