@@ -24,6 +24,7 @@ export const createCourse = async (course: any) => {
   return data;
  }; 
 
+ //modules
 export const findModulesForCourse = async (courseId: string) => {
   const response = await axiosWithCredentials
     .get(`${COURSES_API}/${courseId}/modules`);
@@ -38,6 +39,26 @@ export const createModuleForCourse = async (courseId: string, module: any) => {
   return response.data;
 };
 
+ //quizzes
+ export const findQuizzesForCourse = async (courseId: string) => {
+  const response = await axiosWithCredentials
+    .get(`${COURSES_API}/${courseId}/quizzes`);
+  return response.data;
+};
+
+export const createQuizForCourse = async (courseId: string, quiz: any) => {
+  console.log("from client.ts",courseId);
+  console.log("quiz from clinet"+quiz);
+  
+  
+  const response = await axiosWithCredentials.post(
+    `${COURSES_API}/${courseId}/quizzes`,
+    quiz
+  );
+  return response.data;
+};
+
+//assignments
 export const findAssignmentForCourse = async (courseId: string) => {
   const response = await axiosWithCredentials
     .get(`${COURSES_API}/${courseId}/assignments`);
@@ -66,3 +87,9 @@ export const fetchAllEnrollments = async () => {
   const { data } = await axiosWithCredentials.get(ENROLLMENT_API);
   return data;
 };
+
+export const findUsersForCourse = async (courseId: string) => {
+  const response = await axios.get(`${COURSES_API}/${courseId}/users`);
+  return response.data;
+ };
+ 

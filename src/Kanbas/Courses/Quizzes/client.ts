@@ -1,0 +1,25 @@
+import axios from "axios";
+const REMOTE_SERVER = process.env.REACT_APP_REMOTE_SERVER;
+const QUIZZES_API = `${REMOTE_SERVER}/api/quizzes`;
+const axiosWithCredentials = axios.create({ withCredentials: true });
+
+export const deleteQuiz = async (quizId: any) => {
+ const response = await axiosWithCredentials.delete(`${QUIZZES_API}/${quizId}`);
+ return response.data;
+};
+export const updateQuiz = async (quiz: any) => {
+    const { data } = await axiosWithCredentials.put(`${QUIZZES_API}/${quiz._id}`, quiz);
+    return data;
+  };
+  
+export const publishQuiz=async (quiz:any)=>{
+  const { data } = await axiosWithCredentials.put(`${QUIZZES_API}/${quiz._id}/publish`, quiz);
+  return data;
+ 
+}
+
+export const unPublishQuiz=async (quiz:any)=>{
+  const { data } = await axiosWithCredentials.put(`${QUIZZES_API}/${quiz._id}/unpublish`, quiz);
+  return data;
+ 
+}

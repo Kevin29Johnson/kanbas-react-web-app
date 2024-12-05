@@ -7,11 +7,25 @@ import Assignments from "./Assignments";
 import AssignmentEditor from "./Assignments/Editor";
 import { FaAlignJustify } from "react-icons/fa";
 import PeopleTable from "./People/Table";
-
+import Quizzes from "./Quizzes";
+import QuizzesDetails from "./Quizzes/QuizDetails";
+import QuizEditor from "./Quizzes/QuizEditor";
+import QuizPreview from "./Quizzes/QuizPreview";
+import * as courseClient from "./client";
+import { useEffect, useState } from "react";
 export default function Courses({ courses }: { courses: any[]; }) {
   const { cid } = useParams();
   const course = courses.find((course) => course._id === cid);
   const { pathname } = useLocation();
+  const [users,setUsers] = useState([]);
+  
+  const fetchUsersForCourse= async ()=>{
+     const people=await courseClient.findUsersForCourse(cid as string);
+     setUsers(people)
+  }
+  useEffect(()=>{
+    fetchUsersForCourse()
+  },[])
     return (
         <div id="wd-courses">
          <h2 className="text-danger">
@@ -31,7 +45,11 @@ export default function Courses({ courses }: { courses: any[]; }) {
                 <Route path="Modules" element={<Modules />} />
                 <Route path="Assignments" element={<Assignments/>} />
                 <Route path="Assignments/:aid" element={<AssignmentEditor />} />
-                <Route path="People" element={<PeopleTable />} />
+                <Route path="Quizzes" element={<Quizzes/>}/>
+                <Route path="Quizzes/:qid" element={<QuizzesDetails/>}/>
+                <Route path="Quizzes/:qid/edit" element={<QuizEditor/>}/>
+                <Route path="Quizzes/:qid/preview" element={<QuizPreview/>}/>
+                <Route path="People" element={<PeopleTable  users={users}/>} />
               </Routes>
               </div></div>
       </div>

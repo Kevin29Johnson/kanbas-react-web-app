@@ -77,3 +77,55 @@ body * {  font-family: Arial, Helvetica, sans-serif;  }
   object-fit: cover; 
 }
 
+/* quizzes */
+.quiz-container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.quiz-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.action-buttons button {
+  margin-left: 10px;
+  padding: 5px 15px;
+  border: 1px solid #ccc;
+  background: #f5f5f5;
+  border-radius: 4px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.label {
+  font-weight: bold;
+  color: #333;
+}
+
+.quiz-schedule table {
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: collapse;
+}
+
+.quiz-schedule th,
+.quiz-schedule td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+.quiz-schedule th {
+  background-color: #f5f5f5;
+}
+
+
