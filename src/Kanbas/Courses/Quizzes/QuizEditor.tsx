@@ -6,12 +6,13 @@ import TrueFalseEditor from "./QuestionTypes/TrueFalseEditor";
 import FillInTheBlankEditor from "./QuestionTypes/FillInTheBlank";
 import * as courseClient from "../../Courses/client"
 import * as quizClient from "./client";
+import { useSelector } from "react-redux";
 
 
 export default function QuizEditor() {
   const { cid, qid } = useParams(); 
   const navigate = useNavigate();
-
+  const { currentUser } = useSelector((state: any) => state.accountReducer) || {};
   const [quiz,setQuiz]=useState<any>([]);
   const [questions, setQuestions] = useState<any>([]);
   const [activeTab, setActiveTab] = useState("Details");

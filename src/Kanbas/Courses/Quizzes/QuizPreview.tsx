@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
 import * as courseClient from "../../Courses/client";
 import { useParams } from "react-router";
+import { useSelector } from "react-redux";
 
 const QuizPreview = () => {
   const { cid, qid } = useParams();
   const [quiz, setQuiz] = useState<any>([]);
   const [questions, setQuestions] = useState<any>([]);
   const [answers, setAnswers] = useState<any>({}); // Tracks user answers
-
+  const { currentUser } = useSelector((state: any) => state.accountReducer) || {};
+  
   const fetchQuiz = async () => {
     if (!cid) return;
     const quizFetched = await courseClient.findQuizzesForCourse(cid);
