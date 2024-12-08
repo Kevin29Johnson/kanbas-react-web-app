@@ -23,8 +23,7 @@ function Modules() {
   };
 
   const removeModule = async (moduleId: any) => {
-    console.log("from remove mod"+moduleId);
-    
+
     await modulesClient.deleteModule(moduleId);
     dispatch(deleteModule(moduleId));
   };
@@ -87,7 +86,6 @@ function Modules() {
                   <ModuleControlButtons 
                     moduleId={module._id}
                     deleteModule={(moduleId) =>{
-                      console.log(moduleId)
                       removeModule(moduleId)
                     }}
                     editModule={(moduleId) => dispatch(editModule(moduleId))}

@@ -40,10 +40,7 @@ export default function Quizzes() {
     }
   };
 
-  const handlePublish = (qid: string) => {
-    console.log("Publish clicked for quiz:", qid);
-    setIsContextMenuOpen(null);
-  };
+  
 
   const handlePublishToggle = async (quiz: any) => {
     try {
@@ -146,6 +143,7 @@ export default function Quizzes() {
                     {quiz.title}
                   </a>
                   <div className="float-end position-relative">
+                  
                     {quiz.isPublished ? (
                       <GreenCheckmark />
                     ) : (

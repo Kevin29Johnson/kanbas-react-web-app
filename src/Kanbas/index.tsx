@@ -67,7 +67,6 @@ export default function Kanbas() {
     let courses = [];
     try {
       courses = await userClient.findMyCourses();
-      console.log("from client"+courses)
     } catch (error) {
       console.error(error);
     }

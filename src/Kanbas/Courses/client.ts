@@ -46,11 +46,7 @@ export const createModuleForCourse = async (courseId: string, module: any) => {
   return response.data;
 };
 
-export const createQuizForCourse = async (courseId: string, quiz: any) => {
-  console.log("from client.ts",courseId);
-  console.log("quiz from clinet"+quiz);
-  
-  
+export const createQuizForCourse = async (courseId: string, quiz: any) => {  
   const response = await axiosWithCredentials.post(
     `${COURSES_API}/${courseId}/quizzes`,
     quiz

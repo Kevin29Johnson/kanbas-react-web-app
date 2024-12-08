@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import quizzes from "../../Database/quizzes.json";
 import MultipleChoiceQuestionEditor from "./QuestionTypes/Multiple ChoiceQuestionEditor";
 import ReactQuill from "react-quill";
 import TrueFalseEditor from "./QuestionTypes/TrueFalseEditor";
@@ -8,17 +7,20 @@ import FillInTheBlankEditor from "./QuestionTypes/FillInTheBlank";
 import * as courseClient from "../../Courses/client"
 import * as quizClient from "./client";
 
+
 export default function QuizEditor() {
   const { cid, qid } = useParams(); 
   const navigate = useNavigate();
 
   const [quiz,setQuiz]=useState<any>([]);
+  const [questions, setQuestions] = useState<any>([]);
   const [activeTab, setActiveTab] = useState("Details");
-  const [questionType, setQuestionType] = useState("MultipleChoice");  // Default tab is "Details"
-  const [question, setQuestion]=useState(false);
-  const [edit,setEdit]=useState(false);
+  const [questionType, setQuestionType] = useState("Multiple Choice");  // Default tab is "Details"
+  //const [question, setQuestion]=useState(false);
+  const [edit,setEdit]=useState(true);
 
   const [title, setTitle] = useState("");
+  const [error,setError]=useState("");
   const [description, setDescription] = useState("");
   const [points, setPoints] = useState(0);
   const [timeLimit, setTimeLimit] = useState(0);
@@ -36,12 +38,8 @@ export default function QuizEditor() {
     if (!dateString) return "";
     
     try {
-      // Convert to local datetime-local format
       const date = new Date(dateString);
-      // Check if date is valid
       if (isNaN(date.getTime())) return "";
-  
-      // Format to datetime-local input format (YYYY-MM-DDTHH:MM)
       const localDateString = date.toISOString().slice(0, 16);
       return localDateString;
     } catch (error) {
@@ -50,14 +48,63 @@ export default function QuizEditor() {
     }
   };
 
-  const addQuestion=()=>{
-    setQuestion(true);
-  }
-  const handleEdit=()=>{
-    setEdit(true);
-  }
+ 
+  const addQuestion = () => {
+    const newQuestion = {
+      id:Date.now(),
+      type: "Multiple Choice",
+      title: "",
+      points: 0,
+      text: "",
+      choices: [],
+      correctAnswer: null,
+    };
+    setQuestions([...questions, newQuestion]);
+  };
 
+
+  const handleEdit = (questionId:any) => {
+    setQuestions((prevQuestions:any) =>
+      prevQuestions.map((q:any) =>
+        q._id === questionId ? { ...q, isEditing: !q.isEditing } : q
+      )
+    );
+  };
+
+  const handleQuestionTypeChange = (id: number, type: string) => {
+   questions.map((q:any)=>{
+     if(q===undefined){
+      console.log("no");
+      
+     }
+   })
+    setQuestions(questions.map((q:any) => q._id === id ? {...q, type} : q));
+  };
   
+  // const updateQuestion = async (questionId: string, updatedData: any) => {
+  //     const updatedQuiz = quiz.find((q: any) => q.course === cid && q._id === qid);
+  //     updatedQuiz.questions = updatedQuiz.questions.map((q: any) =>
+  //       q._id === questionId ? { ...q, ...updatedData } : q
+  //     );
+  //     setQuestions(updatedQuiz.questions);
+  // };
+  const updateQuestion = async (questionId: string, updatedData: any,qtype:any) => {
+    setQuestions((prevQuestions: any) => 
+      prevQuestions.map((q: any) => 
+        q._id === questionId 
+          ? { ...q, ...updatedData, isEditing: false,type:qtype }  // Turn off editing mode after update
+          : q
+      )
+    );
+  };
+  const deleteQuestion = async (questionId: string) => {
+      const quizToUpdate = quiz.find((q: any) => q.course === cid && q._id === qid);
+      const updatedQuestions = questions.filter((q: any) => q._id !== questionId);
+      setQuestions(updatedQuestions);  
+      const updatedQuiz = { ...quizToUpdate, questions: updatedQuestions };
+      setQuiz(updatedQuiz);
+
+  };
   const isNewQuiz = qid === "New";
 
   const fetchQuiz = async () => {
@@ -65,13 +112,14 @@ export default function QuizEditor() {
 
     try {
       const quizzesFetched = await courseClient.findQuizzesForCourse(cid);
-      setQuiz(quizzesFetched);
-
+      setQuiz(quizzesFetched); 
+    
+     
       // Find the specific quiz to edit
       const quizToEdit = quizzesFetched.find(
         (q: any) => q.course === cid && q._id === qid
       );
-
+    
       // Populate fields if quiz exists
       if (quizToEdit) {
         setTitle(quizToEdit.title || "");
@@ -87,18 +135,21 @@ export default function QuizEditor() {
         setAvailableDate(formatDateForInput(quizToEdit.availableDate)|| "");
         setDueDate(formatDateForInput(quizToEdit.dueDate) || "");
         setAvailableUntil(formatDateForInput(quizToEdit.availableUntilDate) || "");
+        setQuestions(quizToEdit.questions);        
       }
     } catch (error) {
       console.error("Error fetching quiz:", error);
     }
   };
 
+
   useEffect(() => {
     fetchQuiz();
   }, [cid, qid]);
 
   const handleSave = async () => {
-    const newQuiz = {
+    setQuestions(quiz.questions)
+    const updatedQuiz = {
       _id: isNewQuiz ? Date.now().toString() : qid,
       course: cid,
       title,
@@ -113,16 +164,17 @@ export default function QuizEditor() {
       isOneQuestionAtATime,
       isWebcamRequired,
       isLockQuestionsAfterAnswering,
-      accessCode
+      accessCode,
+      questions: questions,
     };
 
     try {
       if (isNewQuiz) {
         // Create new quiz
-        await courseClient.createQuizForCourse(cid!, newQuiz);
+        await courseClient.createQuizForCourse(cid!, updatedQuiz);
       } else {
         // Update existing quiz
-        await quizClient.updateQuiz(newQuiz);
+        await quizClient.updateQuiz(updatedQuiz);
       }
       
       navigate(`/Kanbas/Courses/${cid}/Quizzes`);
@@ -146,7 +198,7 @@ export default function QuizEditor() {
         <li className="nav-item">
           <button
             className={`nav-link ${activeTab === "Questions" ? "active" : ""}`}
-            onClick={() => setActiveTab("Questions")}
+            onClick={() => {setActiveTab("Questions")}}
           >
             Questions
           </button>
@@ -382,56 +434,72 @@ export default function QuizEditor() {
             </div>
           </div>
         )}
-
-        {/* Questions Tab */}
-        {activeTab === "Questions" && (
-          <div>
-            <button className="btn btn-secondary mb-3" onClick={addQuestion}>
-              + New Question
-            </button>
-            {question && (
-  <div>
-    {!edit ? (
-      <div className="card">
-        <div className="card-body">
-          <h5 className="card-title">Multiple Choice Question</h5>
-          <button className="btn btn-secondary me-2" onClick={handleEdit}>
-            Edit
-          </button>
-          <button className="btn btn-danger">Delete</button>
-        </div>
       </div>
-    ) : (
-      <>
-        <select
-          className="form-select mb-3"
-          value={questionType}
-          onChange={(e) => setQuestionType(e.target.value)}
-        >
-          <option value="MultipleChoice">Multiple Choice</option>
-          <option value="TrueFalse">True/False</option>
-          <option value="FillInTheBlanks">Fill in the Blanks</option>
-        </select>
-
-        {questionType === "MultipleChoice" && <MultipleChoiceQuestionEditor />}
-        {questionType === "TrueFalse" && <TrueFalseEditor />}
-        {questionType === "FillInTheBlanks" && <FillInTheBlankEditor />}
-      </>
-    )}
-  </div>
-)}
+        {/* Questions Tab */}
+{activeTab === "Questions" && (
+  <div>
+    <button className="btn btn-secondary mb-3" onClick={addQuestion}>
+      + New Question
+    </button>
+    {questions && questions.map((question:any) => (
+      <div key={question._id}>
+        {!question.isEditing ? (
+          <div className="card mb-3">
+            <div className="card-body">
+              <h5 className="card-title">{question.type} Question</h5>
+              <h6 className="card-title">Points: {question.points}</h6>
+              <button className="btn btn-secondary me-2" onClick={() => handleEdit(question._id)}>
+                Edit
+              </button>
+              <button className="btn btn-danger" onClick={() => deleteQuestion(question._id) } >
+                Delete
+              </button>
+            </div>
           </div>
+        ) : (
+          <>
+            <select
+              className="form-select mb-3"
+              value={question.type}
+              onChange={(e) => handleQuestionTypeChange(question._id, e.target.value)}
+            >
+              <option value="Multiple Choice">Multiple Choice</option>
+              <option value="TrueFalse">True/False</option>
+              <option value="Fill in the Blanks">Fill in the Blanks</option>
+            </select>
+
+            {question.type === "Multiple Choice" && (
+              <MultipleChoiceQuestionEditor
+                question={question}
+                onUpdate={(updatedData) => updateQuestion(question._id, updatedData,question.type)}
+              />
+            )}
+            {question.type === "TrueFalse" && (
+              <TrueFalseEditor
+                question={question}
+                onUpdate={(updatedData) => updateQuestion(question._id, updatedData,question.type)}
+              />
+            )}
+            {question.type === "Fill in the Blanks" && (
+              <FillInTheBlankEditor
+                question={question}
+                onUpdate={(updatedData) => updateQuestion(question._id, updatedData,question.type)}
+              />
+            )}
+          </>
         )}
       </div>
+    ))}
+  </div>
+)}
 
       {/* Footer Buttons */}
       <div className="d-flex justify-content-end gap-2 mt-4">
         <button className="btn btn-secondary">Cancel</button>
         <button className="btn btn-danger" onClick={handleSave}>Save</button>
+        <button className="btn btn-secondary">Save and Publish</button>
       </div>
     </div>
   );
 
 }
-
-
