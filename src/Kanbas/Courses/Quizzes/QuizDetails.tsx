@@ -2,30 +2,64 @@ import React, { useEffect, useState } from 'react';
 import { GiPencil } from "react-icons/gi";
 import { Link, useParams } from 'react-router-dom';
 import * as courseClient from "../../Courses/client"
+import { useSelector } from 'react-redux';
+import * as quizClient from "./client";
 const QuizDetails = () => {
     const { cid , qid} = useParams();
     const [quiz,setQuiz]=useState<any>([]);
+    const [quizData,setcurrentQuiz]=useState<any>(null);
+    const [ attemptVisible, setAttemptVisible ] = useState<any>(false);
+    const { currentUser } = useSelector((state: any) => state.accountReducer) || {};
+
     const fetchQuiz = async () => {
       if (!cid) return;
       const quizfetched = await courseClient.findQuizzesForCourse(cid);
-     setQuiz(quizfetched)
+      setcurrentQuiz(quizfetched.find((q:any) => q._id === qid));
     };
-  
-    const quizData = quiz.find((q:any) => q._id === qid);
 
-    useEffect(() => {
-      if (qid) fetchQuiz();
-    }, [qid]);
+    const getAttempts = async () => {
+      if (currentUser.role === "FACULTY") {
+          setAttemptVisible(true);
+      } else {
+          const attempts = await quizClient.getAttemptsForUserAndQuiz(currentUser._id, qid);
+          console.log("QUIZ TEMP"+JSON.stringify(quizData));
+          
+          if (attempts.attemptCount>=quizData?.allowedAttempts) {
+              setAttemptVisible(false);
+          } else {
+              setAttemptVisible(true);
+          }
+      }
+  }
+  
+// First useEffect to fetch quiz data
+useEffect(() => {
+  if (qid) {
+      fetchQuiz();
+  }
+}, [cid, qid]);
+
+// Second useEffect to get attempts after quizData is populated
+useEffect(() => {
+  if (quizData && currentUser) {
+      getAttempts();
+  }
+}, [quizData, currentUser]);
+
+    // useEffect(() => {
+    //   if (qid) fetchQuiz();
+    //   getAttempts();
+    // }, [cid,qid]);
 
   return (
     <div className="quiz-container">
       <div className="quiz-header">
         <h2>{quizData?.title??'Quiz Title'}</h2>
         <div className="action-buttons">
-          <button className="preview-btn"> <Link 
+        {attemptVisible && <button className="preview-btn"> <Link 
             to={`/Kanbas/Courses/${cid}/Quizzes/${quizData?._id}/preview`} 
             style={{ color: 'black', textDecoration: 'none' }}
-           >Preview</Link></button>
+           >Preview</Link></button>}  
           <button className="edit-btn">
           <Link 
   to={`/Kanbas/Courses/${cid}/Quizzes/${quizData?._id ?? 'New'}/edit`} 

@@ -34,6 +34,7 @@ export default function QuizEditor() {
   const [availableDate, setAvailableDate] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [availableUntil, setAvailableUntil] = useState("");
+  const [allowedAttempts, setAllowedAttempts] = useState(1);
 
   const formatDateForInput = (dateString: string | undefined) => {
     if (!dateString) return "";
@@ -129,6 +130,7 @@ export default function QuizEditor() {
         setTimeLimit(quizToEdit.timeLimit || 30);
         setShuffleAnswers(quizToEdit.isShuffleAnswers || false);
         setMultipleAttempts(quizToEdit.isMultipleAttempts || false);
+        setAllowedAttempts(quizToEdit.allowedAttempts||1)
         setOneQuestionAtATime(quizToEdit.isOneQuestionAtATime || false);
         setWebcamRequired(quizToEdit.isWebcamRequired || false);
         setLockQuestionsAfterAnswering(quizToEdit.isLockQuestionsAfterAnswering || false);
@@ -162,6 +164,7 @@ export default function QuizEditor() {
       availableUntil,
       isShuffleAnswers,
       isMultipleAttempts,
+      allowedAttempts,
       isOneQuestionAtATime,
       isWebcamRequired,
       isLockQuestionsAfterAnswering,
@@ -302,6 +305,24 @@ export default function QuizEditor() {
                     Allow Multiple Attempts
                   </label>
                 </div>
+                {isMultipleAttempts && (
+        <div className="mb-2">
+          <label
+            htmlFor="allowed-attempts"
+            className="form-label"
+          >
+            Number of Allowed Attempts:
+          </label>
+          <input
+            id="allowed-attempts"
+            type="number"
+            min="1"
+            value={allowedAttempts}
+            onChange={(e) => setAllowedAttempts(Number(e.target.value))}
+            className="form-control"
+          />
+        </div>
+      )}
                 <div className="form-check mb-2">
                   <input
                     id="one-question"

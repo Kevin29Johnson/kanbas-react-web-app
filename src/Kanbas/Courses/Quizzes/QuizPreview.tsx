@@ -2,14 +2,59 @@ import React, { useState, useEffect } from "react";
 import * as courseClient from "../../Courses/client";
 import { useParams } from "react-router";
 import { useSelector } from "react-redux";
-
+import * as quizClient from "./client";
 const QuizPreview = () => {
   const { cid, qid } = useParams();
   const [quiz, setQuiz] = useState<any>([]);
   const [questions, setQuestions] = useState<any>([]);
   const [answers, setAnswers] = useState<any>({}); // Tracks user answers
   const { currentUser } = useSelector((state: any) => state.accountReducer) || {};
-  
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [score, setScore] = useState<number | null>(null);
+
+   // Modify handleSubmit to actually submit the answers
+   const handleSubmit = async () => {
+    if (!currentUser?._id || !qid) {
+      setSubmitError("User must be logged in to submit quiz");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      // Format answers for submission
+      const formattedAnswers = Object.entries(answers).map(([questionId, answer]) => ({
+        questionId,
+        answer: String(answer),
+      }));
+
+      console.log("sent data"+JSON.stringify(formattedAnswers,null,2))
+      // Submit the attempt
+      const result = await quizClient.submitQuizAttempt(
+        currentUser._id,
+        qid,
+        formattedAnswers
+      );
+
+      console.log("result"+JSON.stringify(result,null,2))
+
+      setScore(result.score);
+      alert(`Quiz submitted successfully! Your score: ${result.score}`);
+    } catch (error: any) {
+      setSubmitError(
+        error.response?.data?.error || 
+        "Failed to submit quiz. Please try again."
+      );
+    } finally {
+      setIsSubmitting(false);
+
+    }
+  };
+
+
   const fetchQuiz = async () => {
     if (!cid) return;
     const quizFetched = await courseClient.findQuizzesForCourse(cid);
@@ -28,11 +73,6 @@ const QuizPreview = () => {
     setAnswers((prev: any) => ({ ...prev, [questionId]: value }));
   };
 
-  const handleSubmit = () => {
-    console.log("User's Answers:", answers);
-    alert("Quiz Submitted!");
-    // Additional logic for submission can go here, like sending answers to a server
-  };
 
   const renderQuestion = (question: any) => {
     switch (question.type) {
@@ -65,6 +105,11 @@ const QuizPreview = () => {
   return (
     <div>
       <h1>Quiz Preview</h1>
+      {submitError && (
+        <div className="error-message">
+          {submitError}
+        </div>
+      )}
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -76,9 +121,19 @@ const QuizPreview = () => {
             {renderQuestion(question)}
           </div>
         ))}
-        <button type="submit" className="submit-button">
-          Submit Quiz
+        <button 
+          type="submit" 
+          className="submit-button"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Submitting..." : "Submit Quiz"}
         </button>
+
+        {score !== null && (
+          <div className="score-display">
+            Your Score: {score}
+          </div>
+        )}
       </form>
     </div>
   );
