@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import * as courseClient from "../../Courses/client"
 import { useSelector } from 'react-redux';
 import * as quizClient from "./client";
+import { UserRole } from '../../roles';
 const QuizDetails = () => {
     const { cid , qid} = useParams();
     const [quiz,setQuiz]=useState<any>([]);
@@ -18,7 +19,7 @@ const QuizDetails = () => {
     };
 
     const getAttempts = async () => {
-      if (currentUser.role === "FACULTY") {
+      if (currentUser.role === UserRole.FACULTY) {
           setAttemptVisible(true);
       } else {
           const attempts = await quizClient.getAttemptsForUserAndQuiz(currentUser._id, qid);

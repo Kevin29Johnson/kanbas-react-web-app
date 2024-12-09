@@ -8,13 +8,15 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import * as courseClient from "../../Courses/client";
 import * as quizClient from "./client";
+import { UserRole } from '../../roles';
+import { useSelector } from "react-redux";
 
 export default function Quizzes() {
   const { cid , qid} = useParams();
   const [quizData, setQuiz] = useState<any>([]);
   const navigate = useNavigate();
   const [isContextMenuOpen, setIsContextMenuOpen] = useState<string | null>(null);
-
+  const { currentUser } = useSelector((state: any) => state.accountReducer) || {};
   const fetchQuiz = async () => {
     if (!cid) return;
     const quizfetched = await courseClient.findQuizzesForCourse(cid);
@@ -99,7 +101,7 @@ export default function Quizzes() {
           placeholder="Search..."
           style={{ height: "34px" }}
         />
-
+       {currentUser.role==UserRole.FACULTY &&
         <button id="wd-add-assignment" className="btn btn-danger m-1">
           <a
             href={`#/Kanbas/Courses/${cid}/Quizzes/New`}
@@ -111,7 +113,7 @@ export default function Quizzes() {
             />
             Quiz
           </a>
-        </button>
+        </button>}
       </div>
 
       <div className="wd-title p-3 ps-2 bg-secondary">
@@ -123,7 +125,9 @@ export default function Quizzes() {
 
       <ul id="wd-assignment-list" className="list-group rounded-0">
         {quizData.length > 0 ? (
-          quizData.map((quiz: any) => (
+          quizData.filter((quiz:any)=>currentUser.role === UserRole.FACULTY || 
+          (currentUser.role === UserRole.STUDENT && quiz.isPublished))
+          .map((quiz: any) => (
             <li
               key={quiz._id}
               className="wd-assignment-list-item list-group-item p-3 ps-2 border-bottom d-flex align-items-start"

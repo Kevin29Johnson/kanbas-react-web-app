@@ -3,21 +3,21 @@ import * as courseClient from "../../Courses/client";
 import { useParams } from "react-router";
 import { useSelector } from "react-redux";
 import * as quizClient from "./client";
+
 const QuizPreview = () => {
   const { cid, qid } = useParams();
   const [quiz, setQuiz] = useState<any>([]);
   const [questions, setQuestions] = useState<any>([]);
-  const [answers, setAnswers] = useState<any>({}); // Tracks user answers
+  const [answers, setAnswers] = useState<any>({});
   const { currentUser } = useSelector((state: any) => state.accountReducer) || {};
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [score, setScore] = useState<number | null>(null);
 
-   // Modify handleSubmit to actually submit the answers
-   const handleSubmit = async () => {
+  const handleSubmit = async () => {
     if (!currentUser?._id || !qid) {
-      setSubmitError("User must be logged in to submit quiz");
+      setSubmitError("User must be logged in to submit the quiz");
       return;
     }
 
@@ -25,35 +25,28 @@ const QuizPreview = () => {
     setSubmitError(null);
 
     try {
-      // Format answers for submission
       const formattedAnswers = Object.entries(answers).map(([questionId, answer]) => ({
         questionId,
         answer: String(answer),
       }));
 
-      console.log("sent data"+JSON.stringify(formattedAnswers,null,2))
-      // Submit the attempt
       const result = await quizClient.submitQuizAttempt(
         currentUser._id,
         qid,
         formattedAnswers
       );
 
-      console.log("result"+JSON.stringify(result,null,2))
-
       setScore(result.score);
       alert(`Quiz submitted successfully! Your score: ${result.score}`);
     } catch (error: any) {
       setSubmitError(
-        error.response?.data?.error || 
+        error.response?.data?.error ||
         "Failed to submit quiz. Please try again."
       );
     } finally {
       setIsSubmitting(false);
-
     }
   };
-
 
   const fetchQuiz = async () => {
     if (!cid) return;
@@ -72,7 +65,6 @@ const QuizPreview = () => {
   const handleAnswerChange = (questionId: string, value: any) => {
     setAnswers((prev: any) => ({ ...prev, [questionId]: value }));
   };
-
 
   const renderQuestion = (question: any) => {
     switch (question.type) {
@@ -98,15 +90,15 @@ const QuizPreview = () => {
           />
         );
       default:
-        return <div>Unknown question type</div>;
+        return <div className="alert alert-warning">Unknown question type</div>;
     }
   };
 
   return (
-    <div>
-      <h1>Quiz Preview</h1>
+    <div className="container py-4">
+      <h1 className="mb-4">Quiz Preview</h1>
       {submitError && (
-        <div className="error-message">
+        <div className="alert alert-danger">
           {submitError}
         </div>
       )}
@@ -117,20 +109,23 @@ const QuizPreview = () => {
         }}
       >
         {questions.map((question: any) => (
-          <div key={question._id} className="question-container">
-            {renderQuestion(question)}
+          <div key={question._id} className="card mb-3">
+            <div className="card-body">
+              {renderQuestion(question)}
+            </div>
           </div>
         ))}
-        <button 
-          type="submit" 
-          className="submit-button"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? "Submitting..." : "Submit Quiz"}
-        </button>
-
+        <div className="text-center">
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Submitting..." : "Submit Quiz"}
+          </button>
+        </div>
         {score !== null && (
-          <div className="score-display">
+          <div className="alert alert-success mt-4">
             Your Score: {score}
           </div>
         )}
@@ -145,27 +140,24 @@ const MultipleChoice = ({
 }: {
   question: any;
   handleAnswerChange: (questionId: string, value: any) => void;
-}) => {
-  return (
-    <div className="multiple-choice">
-      <h3>{question.title}</h3>
-      <p dangerouslySetInnerHTML={{ __html: question.text }}></p>
-      {question.choices.map((choice: any, index: number) => (
-        <div key={index}>
-          <label>
-            <input
-              type="radio"
-              name={question._id}
-              value={choice.text}
-              onChange={(e) => handleAnswerChange(question._id, e.target.value)}
-            />
-            {choice.text}
-          </label>
-        </div>
-      ))}
-    </div>
-  );
-};
+}) => (
+  <div>
+    <h3>{question.title}</h3>
+    <p dangerouslySetInnerHTML={{ __html: question.text }}></p>
+    {question.choices.map((choice: any, index: number) => (
+      <div key={index} className="form-check">
+        <input
+          type="radio"
+          className="form-check-input"
+          name={question._id}
+          value={choice.text}
+          onChange={(e) => handleAnswerChange(question._id, e.target.value)}
+        />
+        <label className="form-check-label">{choice.text}</label>
+      </div>
+    ))}
+  </div>
+);
 
 const TrueFalse = ({
   question,
@@ -173,34 +165,32 @@ const TrueFalse = ({
 }: {
   question: any;
   handleAnswerChange: (questionId: string, value: any) => void;
-}) => {
-  return (
-    <div className="true-false">
-      <h3>{question.title}</h3>
-      <p dangerouslySetInnerHTML={{ __html: question.text }}></p>
-      <div>
-        <label>
-          <input
-            type="radio"
-            name={question._id}
-            value="true"
-            onChange={(e) => handleAnswerChange(question._id, true)}
-          />
-          True
-        </label>
-        <label>
-          <input
-            type="radio"
-            name={question._id}
-            value="false"
-            onChange={(e) => handleAnswerChange(question._id, false)}
-          />
-          False
-        </label>
-      </div>
+}) => (
+  <div>
+    <h3>{question.title}</h3>
+    <p dangerouslySetInnerHTML={{ __html: question.text }}></p>
+    <div className="form-check">
+      <input
+        type="radio"
+        className="form-check-input"
+        name={question._id}
+        value="true"
+        onChange={(e) => handleAnswerChange(question._id, true)}
+      />
+      <label className="form-check-label">True</label>
     </div>
-  );
-};
+    <div className="form-check">
+      <input
+        type="radio"
+        className="form-check-input"
+        name={question._id}
+        value="false"
+        onChange={(e) => handleAnswerChange(question._id, false)}
+      />
+      <label className="form-check-label">False</label>
+    </div>
+  </div>
+);
 
 const FillInTheBlanks = ({
   question,
@@ -208,18 +198,17 @@ const FillInTheBlanks = ({
 }: {
   question: any;
   handleAnswerChange: (questionId: string, value: any) => void;
-}) => {
-  return (
-    <div className="fill-in-the-blanks">
-      <h3>{question.title}</h3>
-      <p dangerouslySetInnerHTML={{ __html: question.text }}></p>
-      <input
-        type="text"
-        onChange={(e) => handleAnswerChange(question._id, e.target.value)}
-        placeholder="Type your answer here"
-      />
-    </div>
-  );
-};
+}) => (
+  <div>
+    <h3>{question.title}</h3>
+    <p dangerouslySetInnerHTML={{ __html: question.text }}></p>
+    <input
+      type="text"
+      className="form-control"
+      onChange={(e) => handleAnswerChange(question._id, e.target.value)}
+      placeholder="Type your answer here"
+    />
+  </div>
+);
 
 export default QuizPreview;
