@@ -30,6 +30,7 @@ export default function QuizEditor() {
   const [isOneQuestionAtATime, setOneQuestionAtATime] = useState(false);
   const [isWebcamRequired, setWebcamRequired] = useState(false);
   const [isLockQuestionsAfterAnswering, setLockQuestionsAfterAnswering] = useState(false);
+  const [showCorrectAnswers,setShowCorrrectAnswers]=useState(false);
   const [accessCode, setAccessCode] = useState("");
   const [availableDate, setAvailableDate] = useState("");
   const [dueDate, setDueDate] = useState("");
@@ -142,6 +143,7 @@ export default function QuizEditor() {
         setAvailableDate(formatDateForInput(quizToEdit.availableDate)|| "");
         setDueDate(formatDateForInput(quizToEdit.dueDate) || "");
         setAvailableUntil(formatDateForInput(quizToEdit.availableUntilDate) || "");
+        setShowCorrrectAnswers(showCorrectAnswers||false)
         setQuestions(quizToEdit.questions);        
       }
     } catch (error) {
@@ -172,6 +174,7 @@ export default function QuizEditor() {
       isOneQuestionAtATime,
       isWebcamRequired,
       isLockQuestionsAfterAnswering,
+      showCorrectAnswers,
       accessCode,
       questions: questions,
     };
@@ -382,6 +385,19 @@ export default function QuizEditor() {
                   />
                   <label htmlFor="one-question" className="form-check-label">
                     One Question at a Time
+                  </label>
+                </div>
+
+                <div className="form-check mb-2">
+                  <input
+                    id="show-correct-answers"
+                    type="checkbox"
+                    className="form-check-input"
+                    defaultChecked={isOneQuestionAtATime}
+                    onChange={(e)=>{setOneQuestionAtATime(Boolean(e.target.value))}}
+                  />
+                  <label htmlFor="one-question" className="form-check-label">
+                   Show Correct Answers
                   </label>
                 </div>
 

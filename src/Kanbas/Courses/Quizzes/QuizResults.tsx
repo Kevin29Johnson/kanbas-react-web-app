@@ -85,9 +85,17 @@ const QuizResults = () => {
           </div>
         );
       })}
-      <div className="alert alert-primary" role="alert">
-        Last Attempt: {formatTimestamp(attempt.timestamp)}
-      </div>
+     <div>
+  {attempt.timestamp ? (
+    <div className="alert alert-primary" role="alert">
+      Last Attempt: {formatTimestamp(attempt.timestamp)}
+    </div>
+  ) : (
+    <div className="alert alert-secondary" role="alert">
+      No attempts yet.
+    </div>
+  )}
+</div>
     </div>
   );
 };

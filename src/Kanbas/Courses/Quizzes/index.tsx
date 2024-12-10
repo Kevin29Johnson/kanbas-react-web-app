@@ -26,7 +26,7 @@ export default function Quizzes() {
   
   const handleEdit = (qid: string) => {
     console.log("Edit clicked for quiz:", qid);
-    navigate(`/Kanbas/Courses/${cid}/Quizzes/${qid}/edit`); 
+    navigate(`/Kanbas/Courses/${cid}/Quizzes/${qid}`); 
     setIsContextMenuOpen(null);
   };
 
