@@ -177,15 +177,18 @@ export default function QuizEditor() {
     };
 
     try {
+      let q;
       if (isNewQuiz) {
         // Create new quiz
-        await courseClient.createQuizForCourse(cid!, updatedQuiz);
+         q=await courseClient.createQuizForCourse(cid!, updatedQuiz);
+         navigate(`/Kanbas/Courses/${cid}/Quizzes/${q._id}`);
       } else {
         // Update existing quiz
-        await quizClient.updateQuiz(updatedQuiz);
+         q=await quizClient.updateQuiz(updatedQuiz);
+         navigate(`/Kanbas/Courses/${cid}/Quizzes/${qid}`);
       }
       
-      navigate(`/Kanbas/Courses/${cid}/Quizzes`);
+      // navigate(`/Kanbas/Courses/${cid}/Quizzes/${qid}`);
     } catch(error) {
       console.error("Error saving quizzes:", error);
       navigate(`/Kanbas/Courses/${cid}/Quizzes`); 
@@ -509,6 +512,7 @@ export default function QuizEditor() {
     <button className="btn btn-secondary mb-3" onClick={addQuestion}>
       + New Question
     </button>
+    {/* points sum of all questions */}
     {questions && questions.map((question:any) => (
       <div key={question._id}>
         {!question.isEditing ? (
