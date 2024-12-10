@@ -112,17 +112,17 @@ const handleUpdate = () => {
               value={answer}
               onChange={(e) => handleAnswerChange(index, e.target.value)}
             />
-            {/* <button
+            <button
               className="btn btn-outline-danger"
               onClick={() => handleRemoveAnswer(index)}
             >
               Remove
-            </button> */}
+            </button>
           </div>
         ))}
-        {/* <button className="btn btn-outline-primary" onClick={handleAddAnswer}>
+        <button className="btn btn-outline-primary" onClick={handleAddAnswer}>
           + Add Another Answer
-        </button> */}
+        </button>
       </div>
 
       {/* Buttons */}

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import * as quizClient from "./client";
-import * as courseClient from "../../Courses/client"
+import * as courseClient from "../../Courses/client";
 import { useSelector } from "react-redux";
 
 const QuizResults = () => {
@@ -11,17 +11,18 @@ const QuizResults = () => {
   const [attempt, setAttempt] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const { currentUser } = useSelector((state: any) => state.accountReducer) || {};
+
   const fetchResults = async () => {
     try {
-        const quizFetched = await courseClient.findQuizzesForCourse(cid!);
-        setQuiz(quizFetched);
-        const quizToEdit = quizFetched.find(
-          (q: any) => q.course === cid && q._id === qid
-        );
-        setQuestions(quizToEdit.questions);
-      const attemptData = await quizClient.getAttemptsForUserAndQuiz(currentUser._id,qid);
-      setAttempt(attemptData);
+      const quizFetched = await courseClient.findQuizzesForCourse(cid!);
+      setQuiz(quizFetched);
+      const quizToEdit = quizFetched.find(
+        (q: any) => q.course === cid && q._id === qid
+      );
+      setQuestions(quizToEdit.questions);
 
+      const attemptData = await quizClient.getAttemptsForUserAndQuiz(currentUser._id, qid);
+      setAttempt(attemptData);
     } catch (error) {
       console.error("Failed to fetch results", error);
     } finally {
@@ -30,9 +31,13 @@ const QuizResults = () => {
   };
 
   useEffect(() => {
-    
     fetchResults();
   }, [qid]);
+
+  const formatTimestamp = (timestamp: string) => {
+    const date = new Date(timestamp);
+    return date.toLocaleString();
+  };
 
   if (loading) return <div>Loading...</div>;
 
@@ -45,40 +50,44 @@ const QuizResults = () => {
         const userAnswer = attempt.answers.find(
           (a: any) => a.questionId === question._id
         );
-        let correctAnswer ;
-        if(question.type=="Multiple Choice"){
-            correctAnswer=question.choices.find((choice: any) => choice.isCorrect)?.text;
+        let correctAnswer;
+        let isCorrect = false;
+
+        if (question.type === "Multiple Choice") {
+          correctAnswer = question.choices.find((choice: any) => choice.isCorrect)?.text;
+          isCorrect = userAnswer?.answer === correctAnswer;
+        } else if (question.type === "TrueFalse") {
+          correctAnswer = String(question.correctAnswer);
+          isCorrect = userAnswer?.answer === correctAnswer;
+        } else if (question.type === "Fill in the Blanks") {
+          correctAnswer = question.choices; // Assuming choices array contains all correct answers.
+          isCorrect = correctAnswer.includes(userAnswer?.answer);
         }
-        else if(question.type=="TrueFalse"){
-            correctAnswer=String(question.correctAnswer)
-        }
-        else if(question.type=="Fill in the Blanks"){
-           correctAnswer=question.choices[0];
-        }
-        const isCorrect = userAnswer?.answer === correctAnswer;
-        console.log("QUESTION"+JSON.stringify(question,null,2)+"ATTEMPT"+JSON.stringify(attempt,null,2))
 
         return (
-          <div key={question._id} className={`card mb-3 bg-light ${
-            isCorrect ? "border-success" : "border-danger"
-          }`}
-          style={{ borderWidth: "2px" }}>
+          <div
+            key={question._id}
+            className={`card mb-3 bg-light ${isCorrect ? "border-success" : "border-danger"}`}
+            style={{ borderWidth: "2px" }}
+          >
             <div className="card-body">
               <h5>{question.title}</h5>
               <p dangerouslySetInnerHTML={{ __html: question.text }}></p>
               <p>Your Answer: {userAnswer?.answer || "Not Answered"}</p>
-              <p
-                className={isCorrect ? "text-success" : "text-danger"}
-              >
-                {isCorrect ? "Correct" : "Incorrect"}
-              </p>
+              {isCorrect ? (
+                <p className="text-success">Correct</p>
+              ) : (
+                <p className="text-danger">
+                  Incorrect. Correct Answer(s): {Array.isArray(correctAnswer) ? correctAnswer.join(", ") : correctAnswer}
+                </p>
+              )}
             </div>
           </div>
         );
       })}
-         <div className="alert alert-primary" role="alert"> 
-             Last Attempt {attempt.timestamp}
-            </div>
+      <div className="alert alert-primary" role="alert">
+        Last Attempt: {formatTimestamp(attempt.timestamp)}
+      </div>
     </div>
   );
 };
