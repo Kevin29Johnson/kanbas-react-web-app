@@ -73,6 +73,10 @@ export default function QuizEditor() {
     );
   };
 
+  const handleCancel=()=>{
+    navigate(`/Kanbas/Courses/${cid}/Quizzes`);
+  }
+
   const handleQuestionTypeChange = (id: number, type: string) => {
    questions.map((q:any)=>{
      if(q===undefined){
@@ -559,7 +563,7 @@ export default function QuizEditor() {
 
       {/* Footer Buttons */}
       <div className="d-flex justify-content-end gap-2 mt-4">
-        <button className="btn btn-secondary">Cancel</button>
+        <button className="btn btn-secondary" onClick={handleCancel}>Cancel</button>
         <button className="btn btn-danger" onClick={handleSave}>Save</button>
         <button className="btn btn-secondary" onClick={handleSaveandPublish}>Save and Publish</button>
       </div>
