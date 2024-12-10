@@ -48,11 +48,11 @@ export default function Quizzes() {
     try {
       if (quiz.isPublished) {
         // Unpublish the quiz
-        await quizClient.unPublishQuiz(quiz);
+        await quizClient.unPublishQuiz( quiz._id);
         console.log("Quiz unpublished:", quiz._id);
       } else {
         // Publish the quiz
-        await quizClient.publishQuiz(quiz);
+        await quizClient.publishQuiz( quiz._id);
         console.log("Quiz published:", quiz._id);
       }
 
@@ -161,7 +161,7 @@ export default function Quizzes() {
                       <IoEllipsisVertical className="fs-4 text-black" />
                     </button>
 
-                    {isContextMenuOpen === quiz._id && (
+                    {isContextMenuOpen  === quiz._id && (
                       <div
                         className="position-absolute bg-white border rounded shadow-sm"
                         style={{
@@ -171,6 +171,8 @@ export default function Quizzes() {
                           minWidth: "120px",
                         }}
                       >
+                        {currentUser.role===UserRole.FACULTY && (
+                        <>
                         <button
                           className="btn btn-light w-100 text-start py-2"
                           onClick={() => handleEdit(quiz._id)}
@@ -189,16 +191,31 @@ export default function Quizzes() {
                         >
                          {quiz.isPublished ? "Unpublish" : "Publish"}
                         </button>
+                        </>
+                        )
+                        }
                       </div>
                     )}
                   </div>
                 </div>
                 <p>
                   <span className="red">
-                    {quiz.isMultipleAvailableDates ? "Available" : "Closed"}
+                  {(() => {
+  const currentDate = new Date();
+  const availableDate = new Date(quiz.availableDate);
+  const availableUntil= new Date(quiz.availableUntil);
+
+  if (currentDate > availableUntil) {
+    return "Closed";
+  } else if (currentDate >= availableDate && currentDate <= availableUntil) {
+    return "Available";
+  } else {
+    return `Not available until ${formatDate(quiz.availableDate)}`;
+  }
+})()}
                   </span>{" "}
                   | <strong>Due</strong> {formatDate(quiz.dueDate)} |{" "}
-                  {quiz.points} pts | {quiz.questionsCount} Questions
+                  {quiz.points} pts | {quiz.questions.length} Questions
                 </p>
               </div>
             </li>

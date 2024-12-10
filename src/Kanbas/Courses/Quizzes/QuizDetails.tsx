@@ -32,7 +32,8 @@ const QuizDetails = () => {
           }
       }
   }
-  
+const viewQuizText=currentUser.role===UserRole.FACULTY?"Preview":"Take Quiz"
+
 // First useEffect to fetch quiz data
 useEffect(() => {
   if (qid) {
@@ -60,15 +61,16 @@ useEffect(() => {
         {attemptVisible && <button className="preview-btn"> <Link 
             to={`/Kanbas/Courses/${cid}/Quizzes/${quizData?._id}/preview`} 
             style={{ color: 'black', textDecoration: 'none' }}
-           >Preview</Link></button>}  
-          <button className="edit-btn">
+           >{viewQuizText}</Link></button>}  
+         {currentUser.role === UserRole.FACULTY &&  <button className="edit-btn">
           <Link 
   to={`/Kanbas/Courses/${cid}/Quizzes/${quizData?._id ?? 'New'}/edit`} 
   style={{ color: 'black', textDecoration: 'none' }}
  >
             <GiPencil/>{" "}Edit
           </Link>
-          </button>
+          </button>}
+          <button className="view-last-btn"> <Link to={`/Kanbas/Courses/${cid}/Quizzes/${qid}/results`} style={{ color: 'black', textDecoration: 'none' }}>View Last Attempt</Link> </button>
         </div>
         
       </div>

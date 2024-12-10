@@ -187,6 +187,48 @@ export default function QuizEditor() {
       navigate(`/Kanbas/Courses/${cid}/Quizzes`); 
     }
   }
+
+  const handleSaveandPublish=async ()=>{
+    setQuestions(quiz.questions)
+    const updatedQuiz = {
+      _id: isNewQuiz ? Date.now().toString() : qid,
+      course: cid,
+      title,
+      description,
+      points,
+      timeLimit,
+      availableDate,
+      dueDate,
+      availableUntil,
+      isShuffleAnswers,
+      isMultipleAttempts,
+      allowedAttempts,
+      isOneQuestionAtATime,
+      isWebcamRequired,
+      isLockQuestionsAfterAnswering,
+      accessCode,
+      questions: questions,
+    };
+
+    try {
+      if (isNewQuiz) {
+        // Create new quiz
+        const createdQuiz=await courseClient.createQuizForCourse(cid!, updatedQuiz);
+        await quizClient.publishQuiz(createdQuiz._id)
+
+      } else {
+        // Update existing quiz
+        await quizClient.updateQuiz(updatedQuiz);
+        await quizClient.publishQuiz(qid);
+      }
+      
+      navigate(`/Kanbas/Courses/${cid}/Quizzes`);
+    } catch(error) {
+      console.error("Error saving quizzes:", error);
+      navigate(`/Kanbas/Courses/${cid}/Quizzes`); 
+    }
+
+  }
   return (
     <div className="form-group container mt-4">
       {/* Tabs */}
@@ -283,7 +325,7 @@ export default function QuizEditor() {
                     id="shuffle-answers"
                     type="checkbox"
                     className="form-check-input"
-                    checked={isShuffleAnswers}
+                    defaultChecked={isShuffleAnswers}
                     onChange={(e)=>{setShuffleAnswers(Boolean(e.target.value))}}
                   />
                   <label htmlFor="shuffle-answers" className="form-check-label">
@@ -294,7 +336,7 @@ export default function QuizEditor() {
                   <input
                     id="multiple-attempts"
                     type="checkbox"
-                    checked={isMultipleAttempts}
+                    defaultChecked={isMultipleAttempts}
                     className="form-check-input"
                     onChange={(e)=>{setMultipleAttempts(Boolean(e.target.value))}}
                   />
@@ -328,7 +370,7 @@ export default function QuizEditor() {
                     id="one-question"
                     type="checkbox"
                     className="form-check-input"
-                    checked={isOneQuestionAtATime}
+                    defaultChecked={isOneQuestionAtATime}
                     onChange={(e)=>{setOneQuestionAtATime(Boolean(e.target.value))}}
                   />
                   <label htmlFor="one-question" className="form-check-label">
@@ -341,7 +383,7 @@ export default function QuizEditor() {
                     id="lock-question"
                     type="checkbox"
                     className="form-check-input"
-                    checked={isLockQuestionsAfterAnswering}
+                    defaultChecked={isLockQuestionsAfterAnswering}
                     onChange={(e)=>{setLockQuestionsAfterAnswering(Boolean(e.target.value))}}
                   />
                   <label htmlFor="one-question" className="form-check-label">
@@ -353,7 +395,7 @@ export default function QuizEditor() {
                     id="webcam-required"
                     type="checkbox"
                     className="form-check-input"
-                    checked={isWebcamRequired}
+                    defaultChecked={isWebcamRequired}
                     onChange={(e)=>{setWebcamRequired(Boolean(e.target.value))}}
                   />
                   <label htmlFor="webcam-required" className="form-check-label">
@@ -519,7 +561,7 @@ export default function QuizEditor() {
       <div className="d-flex justify-content-end gap-2 mt-4">
         <button className="btn btn-secondary">Cancel</button>
         <button className="btn btn-danger" onClick={handleSave}>Save</button>
-        <button className="btn btn-secondary">Save and Publish</button>
+        <button className="btn btn-secondary" onClick={handleSaveandPublish}>Save and Publish</button>
       </div>
     </div>
   );

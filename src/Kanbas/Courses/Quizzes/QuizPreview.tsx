@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from "react";
 import * as courseClient from "../../Courses/client";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { useSelector } from "react-redux";
 import * as quizClient from "./client";
-
+import { UserRole } from '../../roles';
+import { Link } from "react-router-dom";
+import { GiPencil } from "react-icons/gi";
 const QuizPreview = () => {
   const { cid, qid } = useParams();
   const [quiz, setQuiz] = useState<any>([]);
   const [questions, setQuestions] = useState<any>([]);
   const [answers, setAnswers] = useState<any>({});
   const { currentUser } = useSelector((state: any) => state.accountReducer) || {};
-
+  const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [score, setScore] = useState<number | null>(null);
@@ -37,7 +39,8 @@ const QuizPreview = () => {
       );
 
       setScore(result.score);
-      alert(`Quiz submitted successfully! Your score: ${result.score}`);
+      // alert(`Quiz submitted successfully! Your score: ${result.score}`);
+      navigate(`/Kanbas/Courses/${cid}/Quizzes/${qid}/results`)
     } catch (error: any) {
       setSubmitError(
         error.response?.data?.error ||
@@ -118,11 +121,22 @@ const QuizPreview = () => {
         <div className="text-center">
           <button
             type="submit"
-            className="btn btn-primary"
+            className="btn btn-danger"
             disabled={isSubmitting}
           >
             {isSubmitting ? "Submitting..." : "Submit Quiz"}
           </button>
+          <br />
+          <div className="container p-2">
+          {currentUser.role === UserRole.FACULTY &&  <button className="btn btn-secondary m-1">
+          <Link 
+  to={`/Kanbas/Courses/${cid}/Quizzes/${qid}/edit`} 
+  style={{ color: 'black', textDecoration: 'none' }}
+ >
+            <GiPencil/>{" "}Keep Editing this quiz
+          </Link>
+          </button>}
+          </div>
         </div>
         {score !== null && (
           <div className="alert alert-success mt-4">
@@ -143,6 +157,7 @@ const MultipleChoice = ({
 }) => (
   <div>
     <h3>{question.title}</h3>
+    <p style={{display:'flex'}}>{question.points} points</p>
     <p dangerouslySetInnerHTML={{ __html: question.text }}></p>
     {question.choices.map((choice: any, index: number) => (
       <div key={index} className="form-check">
@@ -168,6 +183,7 @@ const TrueFalse = ({
 }) => (
   <div>
     <h3>{question.title}</h3>
+    <p style={{display:'flex'}}>{question.points} points</p>
     <p dangerouslySetInnerHTML={{ __html: question.text }}></p>
     <div className="form-check">
       <input
@@ -201,6 +217,7 @@ const FillInTheBlanks = ({
 }) => (
   <div>
     <h3>{question.title}</h3>
+    <p style={{display:'flex'}}>{question.points} points</p>
     <p dangerouslySetInnerHTML={{ __html: question.text }}></p>
     <input
       type="text"

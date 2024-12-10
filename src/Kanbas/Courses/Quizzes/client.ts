@@ -13,14 +13,14 @@ export const updateQuiz = async (quiz: any) => {
     return data;
   };
   
-export const publishQuiz=async (quiz:any)=>{
-  const { data } = await axiosWithCredentials.put(`${QUIZZES_API}/${quiz._id}/publish`, quiz);
+export const publishQuiz=async (quizId:any)=>{
+  const { data } = await axiosWithCredentials.put(`${QUIZZES_API}/${quizId}/publish`);
   return data;
  
 }
 
-export const unPublishQuiz=async (quiz:any)=>{
-  const { data } = await axiosWithCredentials.put(`${QUIZZES_API}/${quiz._id}/unpublish`, quiz);
+export const unPublishQuiz=async (quizId:any)=>{
+  const { data } = await axiosWithCredentials.put(`${QUIZZES_API}/${quizId}/unpublish`);
   return data;
  
 }

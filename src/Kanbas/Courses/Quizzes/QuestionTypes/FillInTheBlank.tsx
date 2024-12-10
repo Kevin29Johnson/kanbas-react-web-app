@@ -51,7 +51,7 @@ export default function FillInTheBlankEditor({
 const handleRemoveAnswer = (index: number) => {
   setLocalQuestion((prev:any) => ({
     ...prev,
-    choices: prev.answers.filter((_:any, i:any) => i !== index)
+    choices: prev.choices.filter((_:any, i:any) => i !== index)
   }));
 };
 
@@ -112,17 +112,17 @@ const handleUpdate = () => {
               value={answer}
               onChange={(e) => handleAnswerChange(index, e.target.value)}
             />
-            <button
+            {/* <button
               className="btn btn-outline-danger"
               onClick={() => handleRemoveAnswer(index)}
             >
               Remove
-            </button>
+            </button> */}
           </div>
         ))}
-        <button className="btn btn-outline-primary" onClick={handleAddAnswer}>
+        {/* <button className="btn btn-outline-primary" onClick={handleAddAnswer}>
           + Add Another Answer
-        </button>
+        </button> */}
       </div>
 
       {/* Buttons */}
