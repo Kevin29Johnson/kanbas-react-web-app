@@ -142,7 +142,7 @@ export default function QuizEditor() {
         setAccessCode(quizToEdit.accessCode || "");
         setAvailableDate(formatDateForInput(quizToEdit.availableDate)|| "");
         setDueDate(formatDateForInput(quizToEdit.dueDate) || "");
-        setAvailableUntil(formatDateForInput(quizToEdit.availableUntilDate) || "");
+        setAvailableUntil(formatDateForInput(quizToEdit.availableUntil) || "");
         setShowCorrrectAnswers(showCorrectAnswers||false)
         setQuestions(quizToEdit.questions);        
       }

@@ -143,9 +143,9 @@ useEffect(() => {
           <tbody>
             <tr>
               <td>{quizData?.dueDate}</td>
-              <td>{quizData?.for}</td>
+              <td>{quizData?.for?quizData?.for:"Everyone"}</td>
               <td>{quizData?.availableDate}</td>
-              <td>{quizData?.availableUntilDate}</td>
+              <td>{quizData?.availableUntil}</td>
             </tr>
           </tbody>
         </table>

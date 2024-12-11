@@ -78,7 +78,7 @@ const QuizResults = () => {
                 <p className="text-success">Correct</p>
               ) : (
                 <p className="text-danger">
-                  Incorrect. Correct Answer(s): {Array.isArray(correctAnswer) ? correctAnswer.join(", ") : correctAnswer}
+                  Incorrect
                 </p>
               )}
             </div>
