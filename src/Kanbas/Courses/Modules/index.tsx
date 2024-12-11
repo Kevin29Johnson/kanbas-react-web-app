@@ -22,7 +22,8 @@ function Modules() {
     dispatch(updateModule(module));
   };
 
-  const removeModule = async (moduleId: string) => {
+  const removeModule = async (moduleId: any) => {
+
     await modulesClient.deleteModule(moduleId);
     dispatch(deleteModule(moduleId));
   };
@@ -31,7 +32,8 @@ function Modules() {
     if (!cid) return;
     const newModule = { name: moduleName, course: cid };
     const module = await coursesClient.createModuleForCourse(cid, newModule);
-    dispatch(addModule(module));
+    fetchModules();
+    //dispatch(addModule(module));
   };
 
   const fetchModules = async () => {
@@ -83,7 +85,9 @@ function Modules() {
                 {currentUser?.role === "FACULTY" && (
                   <ModuleControlButtons 
                     moduleId={module._id}
-                    deleteModule={(moduleId) => removeModule(moduleId)}
+                    deleteModule={(moduleId) =>{
+                      removeModule(moduleId)
+                    }}
                     editModule={(moduleId) => dispatch(editModule(moduleId))}
                   />
                 )}
