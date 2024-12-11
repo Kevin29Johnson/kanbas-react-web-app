@@ -11,11 +11,13 @@ export default function Profile() {
   const updateProfile = async () => {
     const updatedProfile = await client.updateUser(profile);
     dispatch(setCurrentUser(updatedProfile));
+    setProfile(updatedProfile);
   };
 
-  const fetchProfile = () => {
+  const fetchProfile = async () => {
     if (!currentUser) return navigate("/Kanbas/Account/Signin");
-    setProfile(currentUser);
+    const user = await client.findUserById(currentUser._id);
+    setProfile(user);
   };
   const signout = async () => {
     await client.signout();
@@ -23,7 +25,7 @@ export default function Profile() {
     navigate("/Kanbas/Account/Signin");
   };
 
-  useEffect(() => { fetchProfile(); }, []);
+  useEffect(() => { fetchProfile(); }, [currentUser]);
   return (
     <div className="wd-profile-screen">
       <h3>Profile</h3>
@@ -42,9 +44,10 @@ export default function Profile() {
           <input value={profile.email} id="wd-email" className="form-control mb-2"
                  onChange={ (e) => setProfile({ ...profile, email: e.target.value })}/>
           <select onChange={(e) => setProfile({ ...profile, role:  e.target.value })}
-                 className="form-control mb-2" id="wd-role">
-            <option value="USER">User</option>            <option value="ADMIN">Admin</option>
-            <option value="FACULTY">Faculty</option>      <option value="STUDENT">Student</option>
+                value = {profile.role} className="form-control mb-2" id="wd-role">
+                  <option value="ADMIN">Admin</option>
+            <option value="FACULTY">Faculty</option>      
+            <option value="STUDENT">Student</option>
           </select>
           <button onClick={updateProfile} className="btn btn-primary w-100 mb-2"> Update </button>
 
